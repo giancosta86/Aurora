@@ -75,7 +75,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:3.0'
-        classpath 'info.gianlucacosta.aurora:aurora:1.1'
+        classpath 'info.gianlucacosta.aurora:aurora:1.2'
     }
 }
 ```
@@ -134,6 +134,7 @@ It is assumed that the repository on GitHub is named like the project (more prec
 
   * **name**: the author's name
   * **email**: the author's e-mail address
+  * **url**: the author's url. (OPTIONAL)
 
 * **bintray**: settings passed to the *bintray* block provided by the Bintray plugin. In particular:
 
