@@ -53,7 +53,7 @@ This strategy simplifies deployment to Bintray, as well as performing a deployme
 * Setup tasks dependencies:
   * both **compileJava** and **processResources** depend on **setNotices** (which is provided by [MoonLicense-Gradle](https://github.com/giancosta86/MoonLicense-Gradle)).
   * **uploadArchives** depends on **check**. The task is configured so as to deploy its artifact to **${project.buildDir}/mavenDeploy**
-  * **bintrayUpload** depends on **checkGit** and **uploadArchives**
+  * **_bintrayRecordingCopy** depends on **checkGit** and **uploadArchives**
 
 * DSL-based configuration
   
@@ -65,26 +65,31 @@ First of all, it's mandatory to add, at the very beginning of your build script:
 ```
 buildscript {
     repositories {
+        jcenter()
+        
         maven {
-            url "http://dl.bintray.com/giancosta86/Hephaestus"
+            url 'http://dl.bintray.com/giancosta86/Hephaestus'
         }
     }
 
     dependencies {
-        classpath "info.gianlucacosta.moonlicense:moonlicense-gradle:1.0"
-        classpath "info.gianlucacosta.aurora:aurora:0.9"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:1.0'
+        classpath 'info.gianlucacosta.aurora:aurora:0.9.5'
     }
 }
 ```
 
 Please, note that [MoonLicense-Gradle](https://github.com/giancosta86/MoonLicense-Gradle) is required as well.
 
+In addition to this, you might also want to declare a more recent version of every dependency mentioned above.
+
+
 Applying the plugin is standard:
 
 ```
 apply plugin: 'info.gianlucacosta.aurora'
 ```
-
 
 
 ## Usage
