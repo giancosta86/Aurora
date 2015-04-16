@@ -233,6 +233,6 @@ class AuroraService {
 
         project.uploadArchives.dependsOn("check")
 
-        project.bintrayUpload.dependsOn(["checkGit", "uploadArchives"])
+        project._bintrayRecordingCopy.dependsOn(["checkGit", "uploadArchives"])
     }
 }
