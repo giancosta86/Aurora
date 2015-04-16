@@ -20,73 +20,53 @@
 
 buildscript {
     repositories {
+        jcenter()
+
         maven {
-            url "https://dl.bintray.com/giancosta86/Hephaestus"
+            url 'https://dl.bintray.com/giancosta86/Hephaestus'
         }
     }
 
     dependencies {
-        classpath "info.gianlucacosta.moonlicense:moonlicense-gradle:1.0"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:1.0'
+        classpath 'info.gianlucacosta.aurora:aurora:0.9'
     }
-}
-
-plugins {
-    id 'com.jfrog.bintray' version '1.1'
 }
 
 
 apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: "info.gianlucacosta.moonlicense"
+apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '0.9'
+version = '0.9.5'
 
 
 description = 'Elegant Gradle projects for GitHub and Bintray'
 
 
-repositories {
-    mavenLocal()
+aurora {
+    docTask = 'groovydoc'
+    gitHubUser = 'giancosta86'
 
-    maven {
-        url "https://dl.bintray.com/giancosta86/Hephaestus"
+    author {
+        name = 'Gianluca Costa'
+        email = 'gianluca@gianlucacosta.info'
     }
 
-    jcenter()
+    bintray {
+        user = project.bintrayUser
+
+        key = project.bintrayKey
+
+        repo = "Hephaestus"
+
+        licenses = ['Apache-2.0']
+
+        labels = ['elegant', 'projects', 'Gradle', 'GitHub', 'Bintray']
+    }
 }
-
-
-dependencies {
-    compile gradleApi()
-
-    compile localGroovy()
-
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:1.0'
-}
-
-
-
-
-task('sourcesJar', type: Jar, dependsOn: 'classes') {
-    classifier = 'sources'
-    from project.sourceSets.main.allSource
-}
-
-
-task('groovydocJar', type: Jar, dependsOn: 'groovydoc') {
-    classifier = 'javadoc'
-    from project.groovydoc.destinationDir
-}
-
-
-artifacts {
-    archives project.sourcesJar
-    archives project.groovydocJar
-}
-
 
 
 moonLicense {
@@ -100,87 +80,11 @@ moonLicense {
 }
 
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(
-                    url: "file://" + new File(project.buildDir, "mavenDeploy")
-            )
+dependencies {
+    compile gradleApi()
 
-            pom.project {
-                name project.name
-                description project.description
+    compile localGroovy()
 
-
-                url 'https://github.com/giancosta86/Aurora'
-
-
-                developers {
-                    developer {
-                        name 'Gianluca Costa'
-                        email 'gianluca@gianlucacosta.info'
-                    }
-                }
-
-                scm {
-                    url 'git@github.com:giancosta86/Aurora'
-                    connection 'scm:git:git@github.com:giancosta86/Aurora.git'
-                    developerConnection 'scm:git:git@github.com:giancosta86/Aurora.git'
-                }
-
-            }
-        }
-    }
+    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:1.0'
 }
-
-
-
-bintray {
-    if (project.hasProperty("bintrayKey")) {
-        user = bintrayUser
-        key = bintrayKey
-    }
-
-    filesSpec {
-        from('build/mavenDeploy') {
-            include "**/${project.version}/*.jar"
-            include "**/${project.version}/*.pom"
-        }
-        into '.'
-    }
-
-    dryRun = false
-    publish = false
-
-    pkg {
-        repo = 'Hephaestus'
-
-        name = project.name
-        desc = project.description
-
-        websiteUrl = 'https://github.com/giancosta86/Aurora'
-        issueTrackerUrl = 'https://github.com/giancosta86/Aurora/issues'
-        vcsUrl = 'https://github.com/giancosta86/Aurora.git'
-
-        licenses = ['Apache-2.0']
-        labels = ['elegant', 'projects', 'Gradle', 'GitHub', 'Bintray']
-
-        publicDownloadNumbers = false
-
-        version {
-            name = project.version
-            vcsTag = 'v' + project.version
-
-            released = new Date()
-
-            gpg {
-                sign = true
-            }
-
-            mavenCentralSync {
-                sync = false
-            }
-        }
-    }
-}
-
