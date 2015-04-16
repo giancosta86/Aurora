@@ -74,7 +74,7 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:1.0'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:2.0'
         classpath 'info.gianlucacosta.aurora:aurora:1.0'
     }
 }
