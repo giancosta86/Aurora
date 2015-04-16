@@ -68,7 +68,7 @@ buildscript {
         jcenter()
         
         maven {
-            url 'http://dl.bintray.com/giancosta86/Hephaestus'
+            url 'https://dl.bintray.com/giancosta86/Hephaestus'
         }
     }
 
@@ -104,6 +104,7 @@ aurora {
     author {
         name = "<Author name as shown in Maven's POM>"
         email = "<Author's e-mail address>"
+        url = "<Author's url - OPTIONAL>
     }
 
     bintray {

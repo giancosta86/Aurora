@@ -54,6 +54,7 @@ class DslTest extends GroovyTestCase {
             author {
                 name = "TestAuthor"
                 email = "test@localhost"
+                url = "localhost"
             }
 
             bintray {

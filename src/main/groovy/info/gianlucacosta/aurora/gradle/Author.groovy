@@ -26,4 +26,5 @@ package info.gianlucacosta.aurora.gradle
 class Author {
     String name
     String email
+    String url
 }

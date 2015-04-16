@@ -155,6 +155,10 @@ class AuroraService {
                                 developer {
                                     name author.name
                                     email author.email
+
+                                    if (author.url) {
+                                        url author.url
+                                    }
                                 }
                             }
                         }
