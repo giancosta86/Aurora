@@ -75,7 +75,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:3.0'
-        classpath 'info.gianlucacosta.aurora:aurora:1.2'
+        classpath 'info.gianlucacosta.aurora:aurora:2.0'
     }
 }
 ```
@@ -100,6 +100,8 @@ Aurora will configure your project when reaching the following block:
 aurora {
     docTask = "javadoc" //or "groovydoc", or "scaladoc", ...
     gitHubUser  = "<GitHub user id>"
+
+    release = true //OPTIONAL. Default: true
 
     author {
         name = "<Author name as shown in Maven's POM>"
@@ -129,6 +131,12 @@ where:
 
 * **gitHubUser**: GitHub's user hosting the project.
 It is assumed that the repository on GitHub is named like the project (more precisely, its name is **project.name**)
+
+* **release**: determines whether the build process will create artifacts suitable for release. The default value is *true*.
+This flag controls the behavior of the plugin; in particular:
+
+  * **setNotices** won't be a dependency for other tasks when **release** == false
+  * **bintrayUpload** will fail when **release** == false
 
 * **author** can be used one or more times to add authors to the project. Each **author** block requires:
 

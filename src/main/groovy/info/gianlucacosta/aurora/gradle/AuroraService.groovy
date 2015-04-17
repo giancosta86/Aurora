@@ -231,12 +231,20 @@ class AuroraService {
     private void setupTasks() {
         project.tasks.create(name: "checkGit", type: CheckGitTask)
 
-        project.compileJava.dependsOn("setNotices")
+        project.tasks.create(name: 'assertRelease') << {
+            if (!auroraSettings.release) {
+                throw new AuroraException("The requested tasks require release = true")
+            }
+        }
 
-        project.processResources.dependsOn("setNotices")
+
+        if (auroraSettings.release) {
+            project.compileJava.dependsOn("setNotices")
+            project.processResources.dependsOn("setNotices")
+        }
 
         project.uploadArchives.dependsOn("check")
 
-        project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives")
+        project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
     }
 }

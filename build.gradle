@@ -40,7 +40,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '1.2'
+version = '2.0'
 
 
 description = 'Elegant Gradle projects for GitHub and Bintray'

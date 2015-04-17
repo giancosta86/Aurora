@@ -51,6 +51,8 @@ class DslTest extends GroovyTestCase {
             docTask = "javadoc"
             gitHubUser = "anyUser"
 
+            release = true
+
             author {
                 name = "TestAuthor"
                 email = "test@localhost"

@@ -27,6 +27,8 @@ class AuroraSettings {
     String docTask
     String gitHubUser
 
+    boolean release = true
+
     List<Author> authors = new ArrayList<>()
 
     BintraySettings bintraySettings
