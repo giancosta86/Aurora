@@ -32,14 +32,16 @@ class AuroraPlugin implements Plugin<Project> {
         Project project = target
 
         project.ext.aurora = { Closure closure ->
-            AuroraSettings settings = new AuroraSettings()
+            AuroraSettings auroraSettings = new AuroraSettings()
 
-            closure.delegate = settings
+            closure.delegate = auroraSettings
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure()
 
-            AuroraService auroraService = new AuroraService(project, settings)
+            AuroraService auroraService = new AuroraService(project, auroraSettings)
             auroraService.run()
+
+            project.ext.auroraSettings = auroraSettings
         }
 
     }

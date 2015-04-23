@@ -131,4 +131,14 @@ class DslTest extends GroovyTestCase {
             }
         }
     }
+
+
+    void test_auroraSettingsAvailability() {
+        runDefaultWith {}
+
+        assertEquals(
+                "anyUser",
+                project.auroraSettings.gitHubUser
+        )
+    }
 }
