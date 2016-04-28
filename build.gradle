@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015 Gianluca Costa
+  Copyright (C) 2015-2016 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:3.0'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
         classpath 'info.gianlucacosta.aurora:aurora:1.2'
     }
 }
@@ -40,7 +40,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '2.1'
+version = '2.2'
 
 
 description = 'Elegant Gradle projects for GitHub and Bintray'
@@ -86,5 +86,5 @@ dependencies {
     compile localGroovy()
 
     testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:3.0'
+    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
 }
