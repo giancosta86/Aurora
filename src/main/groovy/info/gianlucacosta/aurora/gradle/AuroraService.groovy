@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015 Gianluca Costa
+  Copyright (C) 2015-2016 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -62,7 +62,16 @@ class AuroraService {
 
     private void checkAuroraSettings() {
         if (!auroraSettings.docTask) {
-            throw new AuroraException("Missing docTask (eg: 'javadoc', 'groovydoc', 'scaladoc', ...)")
+
+            if (project.getPluginManager().hasPlugin("scala")) {
+                auroraSettings.docTask = "scaladoc";
+            } else if (project.getPluginManager().hasPlugin("groovy")) {
+                auroraSettings.docTask = "groovydoc"
+            } else {
+                auroraSettings.docTask = "javadoc"
+            }
+
+            println("Inferred doc task: " + auroraSettings.docTask)
         }
 
         if (!auroraSettings.gitHubUser) {
