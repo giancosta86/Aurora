@@ -125,11 +125,20 @@ class DslTest extends GroovyTestCase {
     }
 
 
-    void test_withoutBintray() {
+    void test_withoutBintraySettingsWithBintray() {
+        project.plugins.apply("com.jfrog.bintray")
+
         shouldFail(AuroraException) {
             runDefaultWith {
                 bintraySettings = null
             }
+        }
+    }
+
+
+    void test_withoutBintraySettingsWithoutBintray() {
+        runDefaultWith {
+            bintraySettings = null
         }
     }
 

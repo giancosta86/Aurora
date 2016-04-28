@@ -62,12 +62,25 @@ class AuroraService {
     }
 
 
+    private def hasScala =
+            project.getPluginManager().hasPlugin("scala")
+
+
+    private def hasGroovy =
+            project.getPluginManager().hasPlugin("groovy")
+
+
+    private def hasBintray =
+            project.getPluginManager().hasPlugin("com.jfrog.bintray")
+
+
+
     private void checkAuroraSettings() {
         if (!auroraSettings.docTask) {
 
-            if (project.getPluginManager().hasPlugin("scala")) {
+            if (hasScala) {
                 auroraSettings.docTask = "scaladoc";
-            } else if (project.getPluginManager().hasPlugin("groovy")) {
+            } else if (hasGroovy) {
                 auroraSettings.docTask = "groovydoc"
             } else {
                 auroraSettings.docTask = "javadoc"
@@ -84,7 +97,8 @@ class AuroraService {
             throw new AuroraException("At least an author must be specified")
         }
 
-        if (!auroraSettings.bintraySettings) {
+
+        if (hasBintray && !auroraSettings.bintraySettings) {
             throw new AuroraException("Missing bintray block")
         }
     }
@@ -104,7 +118,6 @@ class AuroraService {
 
     private void applyPlugins() {
         project.plugins.apply("maven")
-        project.plugins.apply("com.jfrog.bintray")
         project.plugins.apply("info.gianlucacosta.moonlicense")
     }
 
@@ -188,6 +201,10 @@ class AuroraService {
 
 
     private void setupBintray() {
+        if (!hasBintray) {
+            return
+        }
+
         project.bintray {
 
             user = auroraSettings.bintraySettings.user
@@ -273,6 +290,8 @@ class AuroraService {
 
         project.uploadArchives.dependsOn("check")
 
-        project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
+        if (hasBintray) {
+            project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
+        }
     }
 }
