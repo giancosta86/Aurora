@@ -278,7 +278,7 @@ class AuroraService {
 
         project.tasks.create(name: 'assertRelease') << {
             if (!auroraSettings.release) {
-                throw new AuroraException("The requested tasks require release = true")
+                throw new AuroraException("The requested task requires release = true")
             }
         }
 
@@ -288,7 +288,9 @@ class AuroraService {
             project.processResources.dependsOn("setNotices")
         }
 
+
         project.uploadArchives.dependsOn("check")
+
 
         if (hasBintray) {
             project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
