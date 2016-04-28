@@ -56,6 +56,8 @@ class AuroraService {
 
         setupBintray()
 
+        setupAppScripts()
+
         setupTasks()
     }
 
@@ -233,6 +235,23 @@ class AuroraService {
                     }
                 }
             }
+        }
+    }
+
+
+    private void setupAppScripts() {
+        if (!project.getPluginManager().hasPlugin("application") || auroraSettings.commandLineApp) {
+            return
+        }
+
+        project.startScripts {
+            def originalWindowsTemplateString = windowsStartScriptGenerator.template.asString()
+            def javawTemplateString =
+                    originalWindowsTemplateString
+                            .replace("java.exe", "javaw.exe")
+                            .replace("\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%")
+            def javawTemplate = project.resources.text.fromString(javawTemplateString)
+            windowsStartScriptGenerator.template = javawTemplate
         }
     }
 

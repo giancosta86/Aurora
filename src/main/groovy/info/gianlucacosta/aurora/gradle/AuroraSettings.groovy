@@ -33,6 +33,8 @@ class AuroraSettings {
 
     BintraySettings bintraySettings
 
+    boolean commandLineApp = false
+
 
     def author(Closure closure) {
         Author author = new Author()
