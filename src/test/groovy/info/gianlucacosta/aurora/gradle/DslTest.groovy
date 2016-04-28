@@ -98,11 +98,12 @@ class DslTest extends GroovyTestCase {
 
 
     void test_withoutDocTask() {
-        shouldFail(AuroraException) {
-            runDefaultWith {
-                docTask = null
-            }
-        }
+        runDefaultWith {}
+
+        assertEquals(
+                "javadoc",
+                project.auroraSettings.docTask
+        )
     }
 
 
