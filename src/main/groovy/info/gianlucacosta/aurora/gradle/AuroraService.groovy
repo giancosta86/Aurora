@@ -72,6 +72,8 @@ class AuroraService {
             hasBintray = project.getPluginManager().hasPlugin("com.jfrog.bintray")
 
             hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
+
+            hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
         }
     }
 
@@ -281,6 +283,7 @@ class AuroraService {
     private void setupTasks() {
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
+        project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
 
         project.tasks.create(name: 'assertRelease') << {
             if (!auroraSettings.release) {
@@ -306,12 +309,18 @@ class AuroraService {
             project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
         }
 
-        if (project.hasMoonLicense && auroraSettings.generateArtifactInfo) {
+        if (project.hasMoonLicense) {
             project.compileJava.dependsOn("generateArtifactInfo")
 
             if (canSetNotices) {
                 project.setNotices.dependsOn("generateArtifactInfo")
             }
+        }
+
+        project.generateAppDescriptor.dependsOn("distZip")
+
+        if (project.hasApplication && project.hasMoonDeploy) {
+            project.assemble.dependsOn("generateAppDescriptor")
         }
     }
 }

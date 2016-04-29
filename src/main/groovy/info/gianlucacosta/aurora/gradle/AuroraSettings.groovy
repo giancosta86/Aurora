@@ -36,8 +36,6 @@ class AuroraSettings {
 
     boolean commandLineApp = false
 
-    boolean generateArtifactInfo = true
-
 
     def author(Closure closure) {
         Author author = new Author()
