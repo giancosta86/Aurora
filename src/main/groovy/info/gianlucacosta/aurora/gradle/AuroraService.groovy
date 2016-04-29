@@ -40,13 +40,13 @@ class AuroraService {
 
 
     public void run() {
+        initPluginFlags()
+
         checkAuroraSettings()
 
         checkProjectSettings()
 
         setupProjectProperties()
-
-        applyPlugins()
 
         setupRepositories()
 
@@ -62,25 +62,27 @@ class AuroraService {
     }
 
 
-    private def hasScala =
-            project.getPluginManager().hasPlugin("scala")
+    private def initPluginFlags() {
+        project.ext {
+            hasScala = project.getPluginManager().hasPlugin("scala")
+            hasGroovy = project.getPluginManager().hasPlugin("groovy")
+            hasApplication = project.getPluginManager().hasPlugin("application")
+            hasMaven = project.getPluginManager().hasPlugin("maven")
 
+            hasBintray = project.getPluginManager().hasPlugin("com.jfrog.bintray")
 
-    private def hasGroovy =
-            project.getPluginManager().hasPlugin("groovy")
-
-
-    private def hasBintray =
-            project.getPluginManager().hasPlugin("com.jfrog.bintray")
+            hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
+        }
+    }
 
 
 
     private void checkAuroraSettings() {
         if (!auroraSettings.docTask) {
 
-            if (hasScala) {
+            if (project.hasScala) {
                 auroraSettings.docTask = "scaladoc";
-            } else if (hasGroovy) {
+            } else if (project.hasGroovy) {
                 auroraSettings.docTask = "groovydoc"
             } else {
                 auroraSettings.docTask = "javadoc"
@@ -98,7 +100,7 @@ class AuroraService {
         }
 
 
-        if (hasBintray && !auroraSettings.bintraySettings) {
+        if (project.hasBintray && !auroraSettings.bintraySettings) {
             throw new AuroraException("Missing bintray block")
         }
     }
@@ -113,13 +115,12 @@ class AuroraService {
 
     private void setupProjectProperties() {
         project.ext.url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
+
+        if (!project.ext.has("facebookPage")) {
+            project.ext.facebookPage = null
+        }
     }
 
-
-    private void applyPlugins() {
-        project.plugins.apply("maven")
-        project.plugins.apply("info.gianlucacosta.moonlicense")
-    }
 
 
     private void setupRepositories() {
@@ -160,6 +161,10 @@ class AuroraService {
 
 
     private void setupUploadArchives() {
+        if (!project.hasMaven) {
+            return
+        }
+
         project.uploadArchives {
             repositories {
                 mavenDeployer {
@@ -201,7 +206,7 @@ class AuroraService {
 
 
     private void setupBintray() {
-        if (!hasBintray) {
+        if (!project.hasBintray) {
             return
         }
 
@@ -257,7 +262,7 @@ class AuroraService {
 
 
     private void setupAppScripts() {
-        if (!project.getPluginManager().hasPlugin("application") || auroraSettings.commandLineApp) {
+        if (!project.hasApplication || auroraSettings.commandLineApp) {
             return
         }
 
@@ -275,6 +280,7 @@ class AuroraService {
 
     private void setupTasks() {
         project.tasks.create(name: "checkGit", type: CheckGitTask)
+        project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
 
         project.tasks.create(name: 'assertRelease') << {
             if (!auroraSettings.release) {
@@ -283,17 +289,29 @@ class AuroraService {
         }
 
 
-        if (auroraSettings.release) {
+        boolean canSetNotices = auroraSettings.release && project.hasMoonLicense
+
+        if (canSetNotices) {
             project.compileJava.dependsOn("setNotices")
             project.processResources.dependsOn("setNotices")
         }
 
 
-        project.uploadArchives.dependsOn("check")
+        if (project.hasMaven) {
+            project.install.dependsOn("check")
+        }
 
 
-        if (hasBintray) {
+        if (project.hasBintray) {
             project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
+        }
+
+        if (project.hasMoonLicense && auroraSettings.generateArtifactInfo) {
+            project.compileJava.dependsOn("generateArtifactInfo")
+
+            if (canSetNotices) {
+                project.setNotices.dependsOn("generateArtifactInfo")
+            }
         }
     }
 }

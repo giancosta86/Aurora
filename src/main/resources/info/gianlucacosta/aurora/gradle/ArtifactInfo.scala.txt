@@ -1,0 +1,19 @@
+package @PACKAGE@
+
+object ArtifactInfo {
+    val name = "@NAME@"
+
+    val version = "@VERSION@"
+
+    val title = s"${name} ${version}"
+
+    val copyrightYears = "@COPYRIGHT_YEARS@"
+
+    val license = "@LICENSE@"
+
+    val website = "@WEBSITE@"
+
+    val facebookPage = "@FACEBOOK_PAGE@"
+
+    val release = @RELEASE@
+}

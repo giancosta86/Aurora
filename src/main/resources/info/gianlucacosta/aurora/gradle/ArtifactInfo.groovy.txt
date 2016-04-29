@@ -1,0 +1,40 @@
+package @PACKAGE@
+
+
+public class ArtifactInfo {
+    public static String getName() {
+        return "@NAME@"
+    }
+
+    public static String getVersion() {
+        return "@VERSION@"
+    }
+
+    public static String getTitle() {
+        return String.format("%s %s", getName(), getVersion());
+    }
+
+    public static String getCopyrightYears() {
+        return "@COPYRIGHT_YEARS@"
+    }
+
+    public static String getLicense() {
+        return "@LICENSE@"
+    }
+
+    public static String getWebsite() {
+        return "@WEBSITE@"
+    }
+
+    public static String getFacebookPage() {
+        return "@FACEBOOK_PAGE@"
+    }
+
+
+    public static boolean isRelease() {
+        return @RELEASE@
+    }
+
+
+    private AppInfo(){}
+}
