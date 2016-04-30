@@ -37,6 +37,9 @@ class AuroraSettings {
     boolean commandLineApp = false
 
 
+    JavaVersion requiredJavaVersion
+
+
     def author(Closure closure) {
         Author author = new Author()
 
@@ -81,5 +84,17 @@ class AuroraSettings {
         }
 
         this.bintraySettings = bintraySettings
+    }
+
+
+    def javaVersion(Closure closure) {
+        JavaVersion requiredJavaVersion = new JavaVersion()
+
+        closure.delegate = requiredJavaVersion
+        closure.resolveStrategy = Closure.DELEGATE_FIRST
+
+        closure()
+
+        this.requiredJavaVersion = requiredJavaVersion
     }
 }
