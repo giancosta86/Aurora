@@ -27,7 +27,7 @@ import org.gradle.api.tasks.bundling.Jar
  * Service configuring the project according to Aurora's settings.
  */
 class AuroraService {
-    public static final String UPLOAD_ARTIFACTS_FOLDER_NAME = "mavenDeploy"
+    private static final String UPLOAD_ARTIFACTS_FOLDER_NAME = "mavenDeploy"
 
 
     private final Project project
@@ -53,17 +53,17 @@ class AuroraService {
 
         setupArtifacts()
 
-        setupUploadArchives()
+        setupMavenArtifacts()
+
+        setupBintray()
 
         setupAppScripts()
 
         setupTasks()
-
-        setupBintray()
     }
 
 
-    private def initPluginFlags() {
+    private void initPluginFlags() {
         project.ext {
             hasScala = project.getPluginManager().hasPlugin("scala")
             hasGroovy = project.getPluginManager().hasPlugin("groovy")
@@ -162,7 +162,8 @@ class AuroraService {
     }
 
 
-    private void setupUploadArchives() {
+
+    private void setupMavenArtifacts() {
         if (!project.hasMaven) {
             return
         }
@@ -205,6 +206,94 @@ class AuroraService {
             }
         }
     }
+
+
+
+    private void setupBintray() {
+        if (!project.hasBintray) {
+            return
+        }
+
+
+        setupBintrayCredentials()
+
+        project.bintray {
+            user = auroraSettings.bintraySettings.user
+            key = auroraSettings.bintraySettings.key
+
+
+            filesSpec {
+                from("build/${UPLOAD_ARTIFACTS_FOLDER_NAME}") {
+                    include "**/${project.version}/*.jar"
+                    include "**/${project.version}/*.pom"
+                }
+                into '.'
+            }
+
+            dryRun = false
+            publish = false
+
+            pkg {
+                repo = auroraSettings.bintraySettings.repo
+
+                name = project.name
+                desc = project.description
+
+                websiteUrl = project.ext.url
+                issueTrackerUrl = "${project.ext.url}/issues"
+                vcsUrl = "${project.ext.url}.git"
+
+                licenses = auroraSettings.bintraySettings.licenses
+                labels = auroraSettings.bintraySettings.labels
+
+                publicDownloadNumbers = false
+
+                version {
+                    name = project.version
+                    vcsTag = "v${project.version}"
+
+                    released = new Date()
+
+                    gpg {
+                        sign = true
+                    }
+
+                    mavenCentralSync {
+                        sync = false
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void setupBintrayCredentials() {
+        String sourcePropertyFile = System.getenv("BINTRAY_CREDENTIALS_FILE")
+        if (sourcePropertyFile == null) {
+            return
+        }
+
+        Properties securityProperties = new Properties()
+
+        if (!auroraSettings.bintraySettings.user || !auroraSettings.bintraySettings.key) {
+            securityProperties.load(new FileInputStream(sourcePropertyFile))
+        }
+
+
+        if (!auroraSettings.bintraySettings.user) {
+            auroraSettings.bintraySettings.user = securityProperties.getProperty("bintrayUser")
+        }
+
+        if (!auroraSettings.bintraySettings.key) {
+            auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
+        }
+
+
+        if (auroraSettings.bintraySettings.user && auroraSettings.bintraySettings.key) {
+            System.out.println("(Bintray credentials ready)")
+        }
+    }
+
 
 
     private void setupAppScripts() {
@@ -250,7 +339,7 @@ class AuroraService {
         }
 
         if (project.hasBintray) {
-            project.bintrayUpload.dependsOn("checkGit", "uploadArchives", "assertRelease")
+            project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
         }
 
         if (project.hasMoonLicense) {
@@ -266,98 +355,5 @@ class AuroraService {
         if (project.hasApplication && project.hasMoonDeploy) {
             project.assemble.dependsOn("generateAppDescriptor")
         }
-    }
-
-
-    private void setupBintray() {
-        if (!project.hasBintray) {
-            return
-        }
-
-
-        ensureBintrayCredentials()
-
-        project.bintray {
-            user = auroraSettings.bintraySettings.user
-            key = auroraSettings.bintraySettings.key
-
-
-            filesSpec {
-                from("build/${AuroraService.UPLOAD_ARTIFACTS_FOLDER_NAME}") {
-                    include "**/${project.version}/*.jar"
-                    include "**/${project.version}/*.pom"
-                }
-                into '.'
-            }
-
-            dryRun = false
-            publish = false
-
-            pkg {
-                repo = auroraSettings.bintraySettings.repo
-
-                name = project.name
-                desc = project.description
-
-                websiteUrl = project.ext.url
-                issueTrackerUrl = "${project.ext.url}/issues"
-                vcsUrl = "${project.ext.url}.git"
-
-                licenses = auroraSettings.bintraySettings.licenses
-                labels = auroraSettings.bintraySettings.labels
-
-                publicDownloadNumbers = false
-
-                version {
-                    name = project.version
-                    vcsTag = "v${project.version}"
-
-                    released = new Date()
-
-                    gpg {
-                        sign = true
-                    }
-
-                    mavenCentralSync {
-                        sync = false
-                    }
-                }
-            }
-        }
-    }
-
-
-    private def ensureBintrayCredentials() {
-        String sourcePropertyFile = System.getenv("BINTRAY_CREDENTIALS_FILE")
-        if (sourcePropertyFile == null) {
-            return
-        }
-
-        Properties securityProperties = new Properties()
-
-        if (!auroraSettings.bintraySettings.user || !auroraSettings.bintraySettings.key) {
-            securityProperties.load(new FileInputStream(sourcePropertyFile))
-        }
-
-
-        if (!auroraSettings.bintraySettings.user) {
-            auroraSettings.bintraySettings.user = securityProperties.getProperty("bintrayUser")
-        }
-
-        if (!auroraSettings.bintraySettings.key) {
-            auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
-        }
-
-
-        if (!auroraSettings.bintraySettings.user) {
-            throw new AuroraException("Missing Bintray user")
-        }
-
-        if (!auroraSettings.bintraySettings.key) {
-            throw new AuroraException("Missing Bintray key")
-        }
-
-
-        System.out.println("(Bintray settings ready)")
     }
 }
