@@ -57,6 +57,8 @@ class AuroraService {
 
         setupBintray()
 
+        setupTodo()
+
         setupAppScripts()
 
         setupTasks()
@@ -75,6 +77,8 @@ class AuroraService {
             hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
 
             hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
+
+            hasTodo = project.getPluginManager().hasPlugin("com.autoscout24.gradle.todo")
         }
     }
 
@@ -295,6 +299,14 @@ class AuroraService {
     }
 
 
+    private void setupTodo() {
+        if (!project.hasTodo) {
+            return
+        }
+
+        project.todo.failIfFound = auroraSettings.release
+    }
+
 
     private void setupAppScripts() {
         if (!project.hasApplication) {
@@ -412,6 +424,11 @@ class AuroraService {
             }
         }
 
+
+        if (project.hasTodo) {
+            project.compileJava.dependsOn("checkTodo")
+            project.processResources.dependsOn("checkTodo")
+        }
 
 
         if (project.hasApplication) {
