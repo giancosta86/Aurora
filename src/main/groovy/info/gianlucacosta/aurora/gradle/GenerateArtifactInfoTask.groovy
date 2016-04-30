@@ -46,10 +46,18 @@ class GenerateArtifactInfoTask extends DefaultTask {
         String artifactId = project.archivesBaseName
 
 
-        String sourcePackage = (groupLastComponent != artifactId) ?
-                "${project.group}.${artifactId}"
-                :
-                project.group
+        String sourcePackage
+
+        if (groupLastComponent != artifactId) {
+            String artifactIdPackageComponent =
+                    artifactId
+                            .replaceAll("[^A-Za-z0-9]", "_")
+                            .replaceAll("__+", "_")
+
+            sourcePackage = "${project.group}.${artifactIdPackageComponent}"
+        } else {
+            sourcePackage = project.group
+        }
 
 
         String sourcePackageRelativePath = sourcePackage.replaceAll("\\.", "/")
@@ -108,8 +116,10 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
                 .replace(
                 "@FACEBOOK_PAGE@",
-                StringEscapeUtils.escapeJava(project.facebookPage)
-
+                project.facebookPage != null ?
+                        "\"${StringEscapeUtils.escapeJava(project.facebookPage)}\""
+                        :
+                        "null"
         )
 
                 .replace(

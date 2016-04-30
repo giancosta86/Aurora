@@ -67,13 +67,6 @@ class AuroraSettings {
 
         closure()
 
-        if (!bintraySettings.user) {
-            throw new AuroraException("Missing user")
-        }
-
-        if (!bintraySettings.key) {
-            throw new AuroraException("Missing key")
-        }
 
         if (!bintraySettings.repo) {
             throw new AuroraException("Missing repo")

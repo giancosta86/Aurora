@@ -29,6 +29,7 @@ import org.gradle.api.tasks.bundling.Jar
 class AuroraService {
     public static final String UPLOAD_ARTIFACTS_FOLDER_NAME = "mavenDeploy"
 
+
     private final Project project
     private final AuroraSettings auroraSettings
 
@@ -54,11 +55,11 @@ class AuroraService {
 
         setupUploadArchives()
 
-        setupBintray()
-
         setupAppScripts()
 
         setupTasks()
+
+        setupBintray()
     }
 
 
@@ -76,7 +77,6 @@ class AuroraService {
             hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
         }
     }
-
 
 
     private void checkAuroraSettings() {
@@ -207,19 +207,83 @@ class AuroraService {
     }
 
 
+    private void setupAppScripts() {
+        if (!project.hasApplication || auroraSettings.commandLineApp) {
+            return
+        }
+
+        project.startScripts {
+            def originalWindowsTemplateString = windowsStartScriptGenerator.template.asString()
+            def javawTemplateString =
+                    originalWindowsTemplateString
+                            .replace("java.exe", "javaw.exe")
+                            .replace("\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%")
+            def javawTemplate = project.resources.text.fromString(javawTemplateString)
+            windowsStartScriptGenerator.template = javawTemplate
+        }
+    }
+
+
+    private void setupTasks() {
+        project.tasks.create(name: "checkGit", type: CheckGitTask)
+        project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
+        project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
+
+
+        project.tasks.create(name: 'assertRelease') << {
+            if (!auroraSettings.release) {
+                throw new AuroraException("The requested task requires release = true")
+            }
+        }
+
+
+        boolean canSetNotices = auroraSettings.release && project.hasMoonLicense
+
+        if (canSetNotices) {
+            project.compileJava.dependsOn("setNotices")
+            project.processResources.dependsOn("setNotices")
+        }
+
+
+        if (project.hasMaven) {
+            project.install.dependsOn("check")
+        }
+
+        if (project.hasBintray) {
+            project.bintrayUpload.dependsOn("checkGit", "uploadArchives", "assertRelease")
+        }
+
+        if (project.hasMoonLicense) {
+            project.compileJava.dependsOn("generateArtifactInfo")
+
+            if (canSetNotices) {
+                project.setNotices.dependsOn("generateArtifactInfo")
+            }
+        }
+
+        project.generateAppDescriptor.dependsOn("distZip")
+
+        if (project.hasApplication && project.hasMoonDeploy) {
+            project.assemble.dependsOn("generateAppDescriptor")
+        }
+    }
+
+
     private void setupBintray() {
         if (!project.hasBintray) {
             return
         }
 
-        project.bintray {
 
+        ensureBintrayCredentials()
+
+        project.bintray {
             user = auroraSettings.bintraySettings.user
             key = auroraSettings.bintraySettings.key
 
 
             filesSpec {
-                from("build/${UPLOAD_ARTIFACTS_FOLDER_NAME}") {
+                from("build/${AuroraService.UPLOAD_ARTIFACTS_FOLDER_NAME}") {
                     include "**/${project.version}/*.jar"
                     include "**/${project.version}/*.pom"
                 }
@@ -263,64 +327,37 @@ class AuroraService {
     }
 
 
-    private void setupAppScripts() {
-        if (!project.hasApplication || auroraSettings.commandLineApp) {
+    private def ensureBintrayCredentials() {
+        String sourcePropertyFile = System.getenv("BINTRAY_CREDENTIALS_FILE")
+        if (sourcePropertyFile == null) {
             return
         }
 
-        project.startScripts {
-            def originalWindowsTemplateString = windowsStartScriptGenerator.template.asString()
-            def javawTemplateString =
-                    originalWindowsTemplateString
-                            .replace("java.exe", "javaw.exe")
-                            .replace("\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%")
-            def javawTemplate = project.resources.text.fromString(javawTemplateString)
-            windowsStartScriptGenerator.template = javawTemplate
-        }
-    }
+        Properties securityProperties = new Properties()
 
-
-    private void setupTasks() {
-        project.tasks.create(name: "checkGit", type: CheckGitTask)
-        project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
-        project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
-
-        project.tasks.create(name: 'assertRelease') << {
-            if (!auroraSettings.release) {
-                throw new AuroraException("The requested task requires release = true")
-            }
+        if (!auroraSettings.bintraySettings.user || !auroraSettings.bintraySettings.key) {
+            securityProperties.load(new FileInputStream(sourcePropertyFile))
         }
 
 
-        boolean canSetNotices = auroraSettings.release && project.hasMoonLicense
+        if (!auroraSettings.bintraySettings.user) {
+            auroraSettings.bintraySettings.user = securityProperties.getProperty("bintrayUser")
+        }
 
-        if (canSetNotices) {
-            project.compileJava.dependsOn("setNotices")
-            project.processResources.dependsOn("setNotices")
+        if (!auroraSettings.bintraySettings.key) {
+            auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
         }
 
 
-        if (project.hasMaven) {
-            project.install.dependsOn("check")
+        if (!auroraSettings.bintraySettings.user) {
+            throw new AuroraException("Missing Bintray user")
+        }
+
+        if (!auroraSettings.bintraySettings.key) {
+            throw new AuroraException("Missing Bintray key")
         }
 
 
-        if (project.hasBintray) {
-            project._bintrayRecordingCopy.dependsOn("checkGit", "uploadArchives", "assertRelease")
-        }
-
-        if (project.hasMoonLicense) {
-            project.compileJava.dependsOn("generateArtifactInfo")
-
-            if (canSetNotices) {
-                project.setNotices.dependsOn("generateArtifactInfo")
-            }
-        }
-
-        project.generateAppDescriptor.dependsOn("distZip")
-
-        if (project.hasApplication && project.hasMoonDeploy) {
-            project.assemble.dependsOn("generateAppDescriptor")
-        }
+        System.out.println("(Bintray settings ready)")
     }
 }

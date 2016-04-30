@@ -13,7 +13,7 @@ object ArtifactInfo {
 
     val website = "@WEBSITE@"
 
-    val facebookPage = "@FACEBOOK_PAGE@"
+    val facebookPage = @FACEBOOK_PAGE@
 
     val release = @RELEASE@
 }

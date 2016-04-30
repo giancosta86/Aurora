@@ -27,7 +27,7 @@ public class ArtifactInfo {
     }
 
     public static String getFacebookPage() {
-        return "@FACEBOOK_PAGE@"
+        return @FACEBOOK_PAGE@
     }
 
 
