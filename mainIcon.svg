@@ -26,31 +26,27 @@
          offset="0"
          id="stop4158" />
       <stop
-         style="stop-color:#15187f;stop-opacity:1"
-         offset="0.23742415"
-         id="stop4174" />
-      <stop
          id="stop4176"
-         offset="0.29359123"
+         offset="0.22700126"
          style="stop-color:#17188b;stop-opacity:1" />
       <stop
          id="stop4164"
-         offset="0.38155982"
+         offset="0.30824947"
          style="stop-color:#000ac2;stop-opacity:1" />
       <stop
          style="stop-color:#1900fd;stop-opacity:1"
-         offset="0.47317243"
+         offset="0.40008551"
          id="stop4166" />
       <stop
          id="stop4178"
-         offset="0.47322574"
+         offset="0.40957221"
          style="stop-color:#0c0eff;stop-opacity:1" />
       <stop
-         style="stop-color:#4aff6f;stop-opacity:0.95294118"
+         style="stop-color:#75ff91;stop-opacity:1"
          offset="0.73259616"
          id="stop4180" />
       <stop
-         style="stop-color:#ffb919;stop-opacity:0.64516127"
+         style="stop-color:#ffd982;stop-opacity:1"
          offset="0.87305522"
          id="stop4172" />
       <stop
@@ -138,8 +134,8 @@
        inkscape:collect="always"
        xlink:href="#linearGradient4156"
        id="linearGradient4162"
-       x1="288.55939"
-       y1="399.43967"
+       x1="281.41653"
+       y1="405.15396"
        x2="291.55585"
        y2="984.58978"
        gradientUnits="userSpaceOnUse"
@@ -153,8 +149,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="281.39587"
-     inkscape:cy="257.75641"
+     inkscape:cx="-160.0327"
+     inkscape:cy="252.04213"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -183,7 +179,7 @@
      id="layer1"
      transform="translate(0,-540.36218)">
     <path
-       style="fill:url(#linearGradient4162);fill-opacity:1;stroke:#000000;stroke-width:1.80145645;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:url(#linearGradient4162);fill-opacity:1;stroke:#000000;stroke-width:2.301;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 282.0628,562.39943 c 32.53284,50.94309 202.32702,484.96477 198.69371,475.76297 -124.30887,-127.93102 -329.60413,-63.23096 -439.453056,5.6482 -45.3426286,26.0423 85.855886,-241.20695 208.434466,-480.40108 7.60677,-14.99313 23.66774,-16.67204 32.32488,-1.01009 z"
        id="rect2985"
        inkscape:connector-curvature="0"
