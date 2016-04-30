@@ -40,10 +40,10 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '3.0'
+version = '3.0-SNAPSHOT'
 
 
-description = 'Elegant Gradle projects for GitHub and Bintray'
+description = 'Elegant Gradle projects for the JVM'
 
 
 aurora {
@@ -56,9 +56,9 @@ aurora {
     }
 
     bintray {
-        user = project.bintrayUser
+        user = "Test" //TODO: project.bintrayUser
 
-        key = project.bintrayKey
+        key = "Test" //TODO: project.bintrayKey
 
         repo = "Hephaestus"
 

@@ -1,6 +1,6 @@
 # Aurora
 
-*Elegant Gradle projects for GitHub and Bintray*
+*Elegant Gradle projects for the JVM*
 
 
 ## Introduction
