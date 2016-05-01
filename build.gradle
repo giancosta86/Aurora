@@ -43,7 +43,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '3.1-SNAPSHOT'
+version = '3.1'
 
 
 description = 'Elegant Gradle projects for the JVM'
