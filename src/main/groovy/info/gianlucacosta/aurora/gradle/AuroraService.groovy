@@ -429,6 +429,10 @@ class AuroraService {
             project.compileJava.dependsOn("setNotices")
             project.processResources.dependsOn("setNotices")
 
+            if (auroraSettings.release) {
+                project.checkGit.dependsOn("setNotices")
+            }
+
             project.setNotices.dependsOn("generateArtifactInfo")
         }
 
