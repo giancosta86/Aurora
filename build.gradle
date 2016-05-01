@@ -77,6 +77,8 @@ moonLicense {
         inceptionYear = 2015
         copyrightHolder = "Gianluca Costa"
     }
+
+    excludes = ['/CheckJavaVersion.js$']
 }
 
 
