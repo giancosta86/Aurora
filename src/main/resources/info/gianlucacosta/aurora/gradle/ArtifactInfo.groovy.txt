@@ -2,39 +2,49 @@ package @PACKAGE@
 
 
 public class ArtifactInfo {
+    private static final String name = "@NAME@";
+    private static final String version = "@VERSION@";
+    private static final String title = String.format("%s %s", getName(), getVersion());
+    private static final String copyrightYears = "@COPYRIGHT_YEARS@";
+    private static final String license = "@LICENSE@";
+    private static final String website = "@WEBSITE@";
+    private static final String facebookPage = @FACEBOOK_PAGE@;
+    private static final boolean release = @RELEASE@;
+
+
     public static String getName() {
-        return "@NAME@"
+        return name;
     }
 
     public static String getVersion() {
-        return "@VERSION@"
+        return version;
     }
 
     public static String getTitle() {
-        return String.format("%s %s", getName(), getVersion());
+        return title;
     }
 
     public static String getCopyrightYears() {
-        return "@COPYRIGHT_YEARS@"
+        return copyrightYears;
     }
 
     public static String getLicense() {
-        return "@LICENSE@"
+        return license;
     }
 
     public static String getWebsite() {
-        return "@WEBSITE@"
+        return website;
     }
 
     public static String getFacebookPage() {
-        return @FACEBOOK_PAGE@
+        return facebookPage;
     }
 
 
     public static boolean isRelease() {
-        return @RELEASE@
+        return release;
     }
 
 
-    private AppInfo(){}
+    private ArtifactInfo(){}
 }
