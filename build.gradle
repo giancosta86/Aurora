@@ -30,24 +30,26 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
-        classpath 'info.gianlucacosta.aurora:aurora:2.1'
+        classpath 'info.gianlucacosta.aurora:aurora:3.0'
     }
 }
 
 
 apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'info.gianlucacosta.moonlicense'
 apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '3.0'
+version = '3.1-SNAPSHOT'
 
 
 description = 'Elegant Gradle projects for the JVM'
 
 
 aurora {
-    docTask = 'groovydoc'
     gitHubUser = 'giancosta86'
 
     author {
@@ -56,10 +58,6 @@ aurora {
     }
 
     bintray {
-        user = project.bintrayUser
-
-        key = project.bintrayKey
-
         repo = "Hephaestus"
 
         licenses = ['Apache-2.0']
