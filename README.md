@@ -117,8 +117,6 @@ This strategy simplifies deployment to Bintray
 
   * For GUI applications (the default), use **javaw** in lieu of **java** on Windows
 
-* Disable the **distTar** task for the application plugin - focusing on **distZip**
-
 * the **checkTodo** task will fail if **release** is *true*
 
 * Setup tasks dependencies (see below)

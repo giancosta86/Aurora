@@ -429,9 +429,7 @@ class AuroraService {
             project.compileJava.dependsOn("setNotices")
             project.processResources.dependsOn("setNotices")
 
-            if (auroraSettings.release) {
-                project.checkGit.dependsOn("setNotices")
-            }
+            project.checkGit.dependsOn("setNotices")
 
             project.setNotices.dependsOn("generateArtifactInfo")
         }
@@ -446,13 +444,7 @@ class AuroraService {
 
 
         if (auroraSettings.release) {
-            project.compileJava.dependsOn("checkGit")
-            project.processResources.dependsOn("checkGit")
-        }
-
-
-        if (project.hasBintray) {
-            project._bintrayRecordingCopy.dependsOn("uploadArchives", "assertRelease")
+            project.check.dependsOn("checkGit")
         }
 
 
@@ -461,13 +453,19 @@ class AuroraService {
         }
 
 
+        if (project.hasBintray) {
+            project._bintrayRecordingCopy.dependsOn("uploadArchives", "assertRelease")
+        }
+
+
         if (project.hasApplication) {
-            project.generateAppDescriptor.dependsOn("distZip")
-
             project.distZip.dependsOn("assertRelease")
-            project.distTar.dependsOn("assertRelease")
+            project.distZip.dependsOn("check")
 
-            project.distTar.enabled = false
+            project.distTar.dependsOn("assertRelease")
+            project.distTar.dependsOn("check")
+
+            project.generateAppDescriptor.dependsOn("distZip")
 
             if (project.hasMoonDeploy && project.hasMoonLicense) {
                 project.assemble.dependsOn("generateAppDescriptor")
