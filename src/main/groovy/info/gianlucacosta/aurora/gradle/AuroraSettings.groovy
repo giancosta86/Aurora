@@ -24,9 +24,9 @@ package info.gianlucacosta.aurora.gradle
  * Settings underlying the <b>aurora</b> block.
  */
 class AuroraSettings {
-    String docTask
-
     String gitHubUser
+
+    String docTask
 
     boolean release = true
 
