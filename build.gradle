@@ -56,9 +56,9 @@ aurora {
     }
 
     bintray {
-        user = "Test" //TODO: project.bintrayUser
+        user = project.bintrayUser
 
-        key = "Test" //TODO: project.bintrayKey
+        key = project.bintrayKey
 
         repo = "Hephaestus"
 
