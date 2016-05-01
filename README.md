@@ -84,8 +84,6 @@ This strategy simplifies deployment to Bintray
 
   * **pkg/githubRepo** = **auroraSettings.gitHubUser**/**project.name**
 
-  * **pkg/githubReleaseNotesFile** = *README.md*
-
   * **pkg/version/released** = new Date()
 
   * **pkg/version/gpg/sign** = true
@@ -123,27 +121,17 @@ This strategy simplifies deployment to Bintray
 
 * the **checkTodo** task will fail if **release** is *true*
 
-* Setup tasks dependencies:
-
-  * both **compileJava** and **processResources** depend on **setNotices** (which is provided by [MoonLicense-Gradle](https://github.com/giancosta86/MoonLicense-Gradle)).
-
-  * both **uploadArchives** and **install** depend on the **check** task
-
-  * if **release** is *true*, **compileJava** and **processResources** depend on **checkGit**
-
-  * **_bintrayRecordingCopy** depends on **assertRelease** and **uploadArchives**
-
-  * **compileJava** and **setNotices** depend on **generateArtifactInfo**
-
-  * **compileJava** and **processResources** depend on **checkTodo**
-
-  * **generateAppDescriptor** depends on **distZip**
-
-  * **distZip** and **distTar** depend on **assertRelease**
-
-  * **assemble** depends on **generateAppDescriptor**
+* Setup tasks dependencies (see below)
 
 * DSL-based configuration
+
+
+## Task dependencies
+
+Aurora introduces a few tasks and task dependencies - however, only if the necessary plugins have been applied before Aurora itself is applied to the project.
+
+![Tasks](tasks.png)
+
 
 
 ## Installation
@@ -257,3 +245,29 @@ aurora {
   * **labels**: the label tags to be shown on Bintray
 
 **javaVersion**: if declared, will generate code - for the **application** plugin distribution - checking that the required Java version (or later) is installed.
+
+
+## Example projects
+
+Aurora is employed in a wide variety of open source projects - both libraries and applications:
+
+* [EighthBridge](https://github.com/giancosta86/EighthBridge)
+
+* [GraphsJ](http://gianlucacosta.info/GraphsJ/)
+
+* [Chronos programming language](https://github.com/giancosta86/Chronos)
+
+* [Chronos IDE](http://gianlucacosta.info/Chronos-IDE/)
+
+* [KnapScal](http://gianlucacosta.info/KnapScal/)
+
+* [KnapScal-core](https://github.com/giancosta86/KnapScal-core)
+
+
+## Further references
+
+* [MoonDeploy](http://gianlucacosta.info/moondeploy/)
+
+* [MoonLicense](https://github.com/giancosta86/MoonLicense)
+
+* [Hephaestus](https://bintray.com/giancosta86/Hephaestus)
