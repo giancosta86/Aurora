@@ -67,6 +67,8 @@ class AuroraService {
 
     private void initPluginFlags() {
         project.ext {
+            hasJava = project.getPluginManager().hasPlugin("java")
+
             hasScala = project.getPluginManager().hasPlugin("scala")
 
             hasGroovy = project.getPluginManager().hasPlugin("groovy")
@@ -117,6 +119,10 @@ class AuroraService {
     private void checkProjectSettings() {
         if (!project.description) {
             throw new AuroraException("The project description is missing")
+        }
+
+        if (!project.hasJava) {
+            throw new AuroraException("Aurora can only be applied to projects for the JVM - having the 'java' plugin")
         }
 
         if (project.hasBintray) {
