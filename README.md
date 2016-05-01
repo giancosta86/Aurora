@@ -149,7 +149,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'info.gianlucacosta.aurora:aurora:3.0'
+        classpath 'info.gianlucacosta.aurora:aurora:CHOOSE_LATEST_VERSION'
     }
 }
 ```
