@@ -24,7 +24,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Task stopping the build whenever the project is versioned with Git <strong>and</strong> its Git status is not clean.
+ * Task stopping the process whenever the project is versioned with Git <strong>and</strong> its Git status is not clean
  */
 class CheckGitTask extends DefaultTask {
     @TaskAction

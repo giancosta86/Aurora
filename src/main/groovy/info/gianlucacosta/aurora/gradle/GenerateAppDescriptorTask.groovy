@@ -23,14 +23,16 @@ package info.gianlucacosta.aurora.gradle
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-
+/**
+ * Task generating a MoonDeploy app descriptor having sensible defaults
+ */
 class GenerateAppDescriptorTask extends DefaultTask {
     @TaskAction
     public void generateDescriptor() {
         ant.moonDeploy(
                 baseURL: "${project.url}/releases/latest",
 
-                name: "${project.moonLicense.productInfo.productName}",
+                name: project.moonLicense.productInfo.productName,
                 version: project.version,
 
                 description: project.description,

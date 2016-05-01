@@ -21,7 +21,7 @@
 package info.gianlucacosta.aurora.gradle
 
 /**
- * Author information.
+ * Author information
  */
 class Author {
     String name

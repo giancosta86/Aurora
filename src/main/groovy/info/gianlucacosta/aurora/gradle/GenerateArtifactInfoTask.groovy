@@ -24,6 +24,9 @@ import groovy.json.StringEscapeUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Task generating a class providing the information for the current artifact
+ */
 class GenerateArtifactInfoTask extends DefaultTask {
     @TaskAction
     def generateAppInfo() {
@@ -42,7 +45,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
         String templateResourceName = "ArtifactInfo.${sourceExtension}.txt"
 
 
-        String groupLastComponent = project.group.split("\\.").last()
+        String groupLastComponent = project.group.toString().split("\\.").last()
         String artifactId = project.archivesBaseName
 
 
@@ -56,7 +59,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
             sourcePackage = "${project.group}.${artifactIdPackageComponent}"
         } else {
-            sourcePackage = project.group
+            sourcePackage = project.group.toString()
         }
 
 
@@ -70,8 +73,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
         }
 
 
-        URL templateUrl = this.getClass().getResource(templateResourceName)
-        String templateString = templateUrl.text
+        String templateString = this.getClass().getResource(templateResourceName).text
         String sourceFileContent = injectVariables(templateString, sourcePackage)
 
         String sourceFileName = "ArtifactInfo.${sourceExtension}"
@@ -112,7 +114,6 @@ class GenerateArtifactInfoTask extends DefaultTask {
                 "@WEBSITE@",
                 StringEscapeUtils.escapeJava(project.url.toString())
         )
-
 
                 .replace(
                 "@FACEBOOK_PAGE@",

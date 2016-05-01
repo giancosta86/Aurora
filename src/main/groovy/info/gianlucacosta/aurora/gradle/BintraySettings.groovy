@@ -21,7 +21,7 @@
 package info.gianlucacosta.aurora.gradle
 
 /**
- * Bintray-related settings.
+ * Bintray-related settings
  */
 class BintraySettings {
     String user

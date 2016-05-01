@@ -36,8 +36,9 @@ class AuroraSettings {
 
     boolean commandLineApp = false
 
-
     JavaVersion requiredJavaVersion
+
+    boolean addDefaultRepositories = true
 
 
     def author(Closure closure) {
@@ -49,12 +50,12 @@ class AuroraSettings {
         closure()
 
         if (!author.name) {
-            throw new AuroraException("Missing name")
+            throw new AuroraException("Missing author name")
         }
 
 
         if (!author.email) {
-            throw new AuroraException("Missing email")
+            throw new AuroraException("Missing author email")
         }
 
 
@@ -72,15 +73,15 @@ class AuroraSettings {
 
 
         if (!bintraySettings.repo) {
-            throw new AuroraException("Missing repo")
+            throw new AuroraException("Missing Bintray repo")
         }
 
         if (!bintraySettings.licenses) {
-            throw new AuroraException("Missing licenses")
+            throw new AuroraException("Missing Bintray licenses")
         }
 
         if (!bintraySettings.labels) {
-            throw new AuroraException("Missing labels")
+            throw new AuroraException("Missing Bintray labels")
         }
 
         this.bintraySettings = bintraySettings

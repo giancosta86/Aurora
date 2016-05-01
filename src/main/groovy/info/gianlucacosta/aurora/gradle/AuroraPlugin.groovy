@@ -24,13 +24,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 /**
- * The plugin class for Gradle, performing the required registrations.
+ * Aurora's plugin for Gradle, performing the required registrations
  */
 class AuroraPlugin implements Plugin<Project> {
     @Override
-    void apply(Project target) {
-        Project project = target
-
+    void apply(Project project) {
         project.ext.aurora = { Closure closure ->
             AuroraSettings auroraSettings = new AuroraSettings()
 

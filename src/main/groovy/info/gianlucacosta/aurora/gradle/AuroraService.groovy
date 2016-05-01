@@ -24,10 +24,10 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
 
 /**
- * Service configuring the project according to Aurora's settings.
+ * Service configuring the project according to Aurora's settings
  */
 class AuroraService {
-    private static final String UPLOAD_ARTIFACTS_FOLDER_NAME = "mavenDeploy"
+    private static final String MAVEN_TEMP_DIRECTORY = "mavenTemp"
 
 
     private final Project project
@@ -68,24 +68,26 @@ class AuroraService {
     private void initPluginFlags() {
         project.ext {
             hasScala = project.getPluginManager().hasPlugin("scala")
+
             hasGroovy = project.getPluginManager().hasPlugin("groovy")
+
             hasApplication = project.getPluginManager().hasPlugin("application")
+
             hasMaven = project.getPluginManager().hasPlugin("maven")
 
             hasBintray = project.getPluginManager().hasPlugin("com.jfrog.bintray")
 
+            hasTodo = project.getPluginManager().hasPlugin("com.autoscout24.gradle.todo")
+
             hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
 
             hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
-
-            hasTodo = project.getPluginManager().hasPlugin("com.autoscout24.gradle.todo")
         }
     }
 
 
     private void checkAuroraSettings() {
         if (!auroraSettings.docTask) {
-
             if (project.hasScala) {
                 auroraSettings.docTask = "scaladoc";
             } else if (project.hasGroovy) {
@@ -116,6 +118,12 @@ class AuroraService {
         if (!project.description) {
             throw new AuroraException("The project description is missing")
         }
+
+        if (project.hasBintray) {
+            if (!project.hasMaven) {
+                throw new AuroraException("The 'maven' plugin is required when employing Bintray's plugin with Aurora")
+            }
+        }
     }
 
 
@@ -128,8 +136,11 @@ class AuroraService {
     }
 
 
-
     private void setupRepositories() {
+        if (!auroraSettings.addDefaultRepositories) {
+            return
+        }
+
         project.repositories {
             mavenLocal()
 
@@ -145,6 +156,11 @@ class AuroraService {
 
 
     private void setupArtifacts() {
+        if (!project.hasMaven || !project.hasBintray) {
+            return
+        }
+
+
         def docTask = auroraSettings.docTask
 
         project.task('sourcesJar', type: Jar, dependsOn: 'classes') {
@@ -153,7 +169,7 @@ class AuroraService {
         }
 
 
-        project.task('javadocJar', type: Jar, dependsOn: docTask) {
+        project.task('docJar', type: Jar, dependsOn: docTask) {
             classifier = 'javadoc'
             from project.tasks[docTask].destinationDir
         }
@@ -161,10 +177,9 @@ class AuroraService {
 
         project.artifacts {
             archives project.sourcesJar
-            archives project.javadocJar
+            archives project.docJar
         }
     }
-
 
 
     private void setupMavenArtifacts() {
@@ -176,7 +191,7 @@ class AuroraService {
             repositories {
                 mavenDeployer {
                     repository(
-                            url: "file://" + new File(project.buildDir, UPLOAD_ARTIFACTS_FOLDER_NAME)
+                            url: "file://" + new File(project.buildDir, MAVEN_TEMP_DIRECTORY)
                     )
 
                     pom.project {
@@ -212,7 +227,6 @@ class AuroraService {
     }
 
 
-
     private void setupBintray() {
         if (!project.hasBintray) {
             return
@@ -227,7 +241,7 @@ class AuroraService {
 
 
             filesSpec {
-                from("build/${UPLOAD_ARTIFACTS_FOLDER_NAME}") {
+                from("build/${MAVEN_TEMP_DIRECTORY}") {
                     include "**/${project.version}/*.jar"
                     include "**/${project.version}/*.pom"
                 }
@@ -251,6 +265,9 @@ class AuroraService {
                 labels = auroraSettings.bintraySettings.labels
 
                 publicDownloadNumbers = false
+
+                githubRepo = "${auroraSettings.gitHubUser}/${project.name}"
+                githubReleaseNotesFile = 'README.md'
 
                 version {
                     name = project.version
@@ -291,11 +308,6 @@ class AuroraService {
         if (!auroraSettings.bintraySettings.key) {
             auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
         }
-
-
-        if (auroraSettings.bintraySettings.user && auroraSettings.bintraySettings.key) {
-            System.out.println("(Bintray credentials ready)")
-        }
     }
 
 
@@ -317,10 +329,10 @@ class AuroraService {
 
         if (javaVersion != null) {
             project.tasks.create(name: 'createCheckJavaVersionScripts') {
-                def checkJavaDir = project.file("${project.buildDir}/checkJava")
-                outputs.dir checkJavaDir
+                def scriptsTempDirectory = project.file("${project.buildDir}/checkJava")
+                outputs.dir scriptsTempDirectory
                 doLast {
-                    checkJavaDir.mkdirs()
+                    scriptsTempDirectory.mkdirs()
 
                     [
                             "CheckJavaVersion.sh",
@@ -328,7 +340,7 @@ class AuroraService {
 
                     ].forEach({ scriptName ->
                         String scriptContent = this.getClass().getResource(scriptName).text
-                        File scriptFile = new File(checkJavaDir, scriptName)
+                        File scriptFile = new File(scriptsTempDirectory, scriptName)
                         scriptFile.text = scriptContent
 
                         if (scriptName.endsWith(".sh")) {
@@ -351,19 +363,19 @@ class AuroraService {
             project.startScripts {
                 windowsStartScriptGenerator.template =
                         project.resources.text.fromString(
-                            "cscript //NoLogo CheckJavaVersion.js ${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                            + "if %errorlevel% neq 0 exit /b %errorlevel%\n\n"
-                            + windowsStartScriptGenerator.template.asString()
+                                "cscript //NoLogo CheckJavaVersion.js ${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
+                                        + "if %errorlevel% neq 0 exit /b %errorlevel%\n\n"
+                                        + windowsStartScriptGenerator.template.asString()
                         )
 
 
                 unixStartScriptGenerator.template =
                         project.resources.text.fromString(
                                 "if ! ./CheckJavaVersion.sh ${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                                + "then\n"
-                                + "\texit 1\n"
-                                + "fi\n\n"
-                                + unixStartScriptGenerator.template.asString()
+                                        + "then\n"
+                                        + "\texit 1\n"
+                                        + "fi\n\n"
+                                        + unixStartScriptGenerator.template.asString()
                         )
             }
         }
@@ -372,11 +384,17 @@ class AuroraService {
         if (!auroraSettings.commandLineApp) {
             project.startScripts {
                 windowsStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                        windowsStartScriptGenerator.template.asString()
-                                    .replace("java.exe", "javaw.exe")
-                                    .replace("\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%")
-                    )
+                        project.resources.text.fromString(
+                                windowsStartScriptGenerator.template.asString()
+                                        .replace(
+                                            "java.exe",
+                                            "javaw.exe"
+                                        )
+                                        .replace(
+                                            "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%",
+                                            "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%"
+                                        )
+                        )
             }
         }
     }
@@ -405,6 +423,7 @@ class AuroraService {
 
         if (project.hasMaven) {
             project.install.dependsOn("check")
+            project.uploadArchives.dependsOn("check")
         }
 
         if (auroraSettings.release) {
