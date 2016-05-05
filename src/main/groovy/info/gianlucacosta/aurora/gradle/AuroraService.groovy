@@ -372,7 +372,7 @@ class AuroraService {
         project.startScripts {
             windowsStartScriptGenerator.template =
                     project.resources.text.fromString(
-                            'cscript //NoLogo %~dp0CheckJavaVersion.js ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
+                            'cscript //NoLogo "%~dp0CheckJavaVersion.js" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
                                     + 'if %errorlevel% neq 0 exit /b %errorlevel%\n\n'
                                     + windowsStartScriptGenerator.template.asString()
                     )
@@ -381,7 +381,7 @@ class AuroraService {
             unixStartScriptGenerator.template =
                     project.resources.text.fromString(
                             '#!/usr/bin/env bash\n'
-                            + 'if ! \\$(dirname "\\$0")/CheckJavaVersion.sh ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
+                            + 'if ! "\\$(dirname "\\$0")/CheckJavaVersion.sh" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
                             + 'then\n'
                             + '\texit 1\n'
                             + 'fi\n\n'
