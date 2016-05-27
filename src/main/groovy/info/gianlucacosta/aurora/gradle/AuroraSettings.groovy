@@ -28,8 +28,6 @@ class AuroraSettings {
 
     String docTask
 
-    boolean release = true
-
     List<Author> authors = new ArrayList<>()
 
     BintraySettings bintraySettings

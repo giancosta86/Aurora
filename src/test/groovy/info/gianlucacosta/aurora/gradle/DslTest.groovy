@@ -51,8 +51,6 @@ class DslTest extends GroovyTestCase {
         project.aurora {
             gitHubUser = "anyUser"
 
-            release = true
-
             author {
                 name = "TestAuthor"
                 email = "test@localhost"

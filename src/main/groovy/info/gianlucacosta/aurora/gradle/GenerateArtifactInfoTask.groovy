@@ -64,7 +64,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
 
         String sourcePackageRelativePath = sourcePackage.replaceAll("\\.", "/")
-        File sourcePackageDirectory = project.file("src/main/${languageDirectoryName}/${sourcePackageRelativePath}")
+        File sourcePackageDirectory = project.file("src/generated/${languageDirectoryName}/${sourcePackageRelativePath}")
 
         if (!sourcePackageDirectory.exists()) {
             if (!sourcePackageDirectory.mkdirs()) {
@@ -125,7 +125,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
                 .replace(
                 "@RELEASE@",
-                project.auroraSettings.release.toString()
+                project.isRelease.toString()
 
         )
     }

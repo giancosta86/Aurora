@@ -21,6 +21,7 @@
 package info.gianlucacosta.aurora.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Jar
 
 /**
@@ -50,6 +51,8 @@ class AuroraService {
         setupProjectProperties()
 
         setupRepositories()
+
+        setupSourceSets()
 
         setupArtifacts()
 
@@ -86,6 +89,8 @@ class AuroraService {
             hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
 
             hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
+
+            isRelease = !project.version.toString().endsWith("-SNAPSHOT")
         }
     }
 
@@ -99,8 +104,6 @@ class AuroraService {
             } else {
                 auroraSettings.docTask = "javadoc"
             }
-
-            println("Inferred doc task: " + auroraSettings.docTask)
         }
 
         if (!auroraSettings.gitHubUser) {
@@ -158,6 +161,36 @@ class AuroraService {
 
             maven {
                 url "https://dl.bintray.com/giancosta86/Hephaestus"
+            }
+        }
+    }
+
+
+    private void setupSourceSets() {
+        project.sourceSets {
+            generated
+        }
+
+
+        project.dependencies {
+            compile project.sourceSets.generated.compileClasspath
+            compile project.sourceSets.generated.output
+
+            testCompile project.sourceSets.generated.compileClasspath
+            testCompile project.sourceSets.generated.output
+        }
+
+
+        if (project.hasScala) {
+            project.compileScala {
+                source project.sourceSets.generated.scala
+            }
+        }
+
+
+        if (project.hasGroovy) {
+            project.compileGroovy {
+                source project.sourceSets.generated.groovy
             }
         }
     }
@@ -326,7 +359,7 @@ class AuroraService {
             return
         }
 
-        project.todo.failIfFound = auroraSettings.release
+        project.todo.failIfFound = project.isRelease
     }
 
 
@@ -414,14 +447,22 @@ class AuroraService {
 
 
     private void setupTasks() {
+        project.tasks.create(name: "deleteGenerated", type: Delete) {
+            delete 'src/generated'
+        }
+
+        project.clean.dependsOn("deleteGenerated")
+
+
+
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
 
 
         project.tasks.create(name: 'assertRelease') << {
-            if (!auroraSettings.release) {
-                throw new AuroraException("The requested task requires release = true")
+            if (!project.isRelease) {
+                throw new AuroraException("The requested task requires a release version")
             }
         }
 
@@ -444,7 +485,7 @@ class AuroraService {
         }
 
 
-        if (auroraSettings.release) {
+        if (project.isRelease) {
             project.check.dependsOn("checkGit")
         }
 
