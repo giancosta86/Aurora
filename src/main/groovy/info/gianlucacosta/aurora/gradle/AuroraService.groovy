@@ -24,6 +24,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Jar
 
+
 /**
  * Service configuring the project according to Aurora's settings
  */
@@ -173,25 +174,9 @@ class AuroraService {
 
 
         project.dependencies {
-            compile project.sourceSets.generated.compileClasspath
             compile project.sourceSets.generated.output
 
-            testCompile project.sourceSets.generated.compileClasspath
             testCompile project.sourceSets.generated.output
-        }
-
-
-        if (project.hasScala) {
-            project.compileScala {
-                source project.sourceSets.generated.scala
-            }
-        }
-
-
-        if (project.hasGroovy) {
-            project.compileGroovy {
-                source project.sourceSets.generated.groovy
-            }
         }
     }
 
@@ -453,11 +438,11 @@ class AuroraService {
 
         project.clean.dependsOn("deleteGenerated")
 
-
-
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
+
+        project.compileGeneratedJava.dependsOn("generateArtifactInfo")
 
 
         project.tasks.create(name: 'assertRelease') << {
