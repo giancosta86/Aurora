@@ -18,30 +18,27 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
-import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import info.gianlucacosta.aurora.utils.SvgToPngConverter
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-/**
- * Aurora's plugin for Gradle, performing the required registrations
- */
-class AuroraPlugin implements Plugin<Project> {
-    @Override
-    void apply(Project project) {
-        project.ext.aurora = { Closure closure ->
-            AuroraSettings auroraSettings = new AuroraSettings()
+class GenerateMainIconsTask extends DefaultTask {
+    @TaskAction
+    def generateIcons() {
+        File svgSourceFile = project.file("mainIcon.svg")
 
-            closure.delegate = auroraSettings
-            closure.resolveStrategy = Closure.DELEGATE_FIRST
-            closure()
-
-            AuroraService auroraService = new AuroraService(project, auroraSettings)
-            auroraService.run()
-
-            project.ext.auroraSettings = auroraSettings
+        if (!svgSourceFile.exists()) {
+            return
         }
 
+        File iconResourcesDir = project.file("src/generated/resources/${project.group.toString().replace('.', '/')}/icons")
+        iconResourcesDir.mkdirs()
+
+        [16, 32, 64, 128, 512].forEach {iconSize ->
+            File outputFile = new File(iconResourcesDir, "mainIcon${iconSize}.png")
+            SvgToPngConverter.convert(svgSourceFile, outputFile, iconSize)
+        }
     }
 }

@@ -18,7 +18,9 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.settings
+
+import info.gianlucacosta.aurora.gradle.AuroraException
 
 /**
  * Settings underlying the <b>aurora</b> block.

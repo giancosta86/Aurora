@@ -18,9 +18,10 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
 import groovy.json.StringEscapeUtils
+import info.gianlucacosta.aurora.gradle.AuroraException
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

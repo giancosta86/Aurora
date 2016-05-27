@@ -18,29 +18,13 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.settings
 
-import info.gianlucacosta.aurora.utils.PngToIcoConverter
-import info.gianlucacosta.aurora.utils.SvgToPngConverter
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
-
-class GenerateDistIconsTask extends DefaultTask {
-    @TaskAction
-    def generateIcons() {
-        File svgSourceFile = project.file("mainIcon.svg")
-
-        if (!svgSourceFile.exists()) {
-            return
-        }
-
-        File distDirectory = project.file("src/generated/dist")
-        distDirectory.mkdirs()
-
-        File pngIconFile = new File(distDirectory, "mainIcon.png")
-        SvgToPngConverter.convert(svgSourceFile, pngIconFile, 64)
-
-        File icoIconFile = new File(distDirectory, "mainIcon.ico")
-        PngToIcoConverter.convert(pngIconFile, icoIconFile)
-    }
+/**
+ * Author information
+ */
+class Author {
+    String name
+    String email
+    String url
 }

@@ -18,27 +18,37 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
-import info.gianlucacosta.aurora.utils.SvgToPngConverter
+import info.gianlucacosta.aurora.gradle.AuroraException
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class GenerateMainIconsTask extends DefaultTask {
+/**
+ * Task stopping the process whenever the project is versioned with Git <strong>and</strong> its Git status is not clean
+ */
+class CheckGitTask extends DefaultTask {
     @TaskAction
-    def generateIcons() {
-        File svgSourceFile = project.file("mainIcon.svg")
+    def checkGitStatus() {
+        File gitFolder = project.file(".git")
 
-        if (!svgSourceFile.exists()) {
+        if (!gitFolder.isDirectory()) {
             return
         }
 
-        File iconResourcesDir = project.file("src/generated/resources/${project.group.toString().replace('.', '/')}/icons")
-        iconResourcesDir.mkdirs()
+        def outputBuffer = new ByteArrayOutputStream()
 
-        [16, 32, 64, 128, 512].forEach {iconSize ->
-            File outputFile = new File(iconResourcesDir, "mainIcon${iconSize}.png")
-            SvgToPngConverter.convert(svgSourceFile, outputFile, iconSize)
+        project.exec {
+            workingDir project.projectDir
+            executable = 'git'
+            args = ["status", "--porcelain"]
+            standardOutput = outputBuffer
+        }
+
+        String statusOutput = outputBuffer.toString()
+
+        if (!statusOutput.isEmpty()) {
+            throw new AuroraException("The project directory must be clean according to 'git status'")
         }
     }
 }

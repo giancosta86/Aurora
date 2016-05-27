@@ -18,17 +18,12 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
-/**
- * Bintray-related settings
- */
-class BintraySettings {
-    String user
-    String key
+import org.gradle.api.tasks.Delete
 
-    String repo
-
-    List<String> licenses
-    List<String> labels
+class DeleteGeneratedTask extends Delete {
+    DeleteGeneratedTask() {
+        setDelete('src/generated')
+    }
 }

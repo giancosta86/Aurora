@@ -18,14 +18,17 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
-/**
- * Standard Java version
- */
-class JavaVersion {
-    int major
-    int minor
-    int build
-    int update
+import info.gianlucacosta.aurora.gradle.AuroraException
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
+
+class AssertReleaseTask extends DefaultTask {
+    @TaskAction
+    def assertRelease() {
+        if (!project.isRelease) {
+            throw new AuroraException("The requested task requires a release version")
+        }
+    }
 }

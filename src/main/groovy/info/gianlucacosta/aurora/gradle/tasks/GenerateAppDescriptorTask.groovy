@@ -18,36 +18,45 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Task stopping the process whenever the project is versioned with Git <strong>and</strong> its Git status is not clean
+ * Task generating a MoonDeploy app descriptor having sensible defaults
  */
-class CheckGitTask extends DefaultTask {
+class GenerateAppDescriptorTask extends DefaultTask {
     @TaskAction
-    def checkGitStatus() {
-        File gitFolder = project.file(".git")
+    public void generateDescriptor() {
+        ant.moonDeploy(
+                baseURL: "${project.url}/releases/latest",
 
-        if (!gitFolder.isDirectory()) {
-            return
-        }
+                name: project.moonLicense.productInfo.productName,
+                version: project.version,
 
-        def outputBuffer = new ByteArrayOutputStream()
+                description: project.description,
+                publisher: project.auroraSettings.authors.first().name,
 
-        project.exec {
-            workingDir project.projectDir
-            executable = 'git'
-            args = ["status", "--porcelain"]
-            standardOutput = outputBuffer
-        }
+                skipPackageLevels: 1,
 
-        String statusOutput = outputBuffer.toString()
+                iconPath: "mainIcon.png"
+        ) {
+            commandLine {
+                param("bash")
+                param("bin/${project.name}")
+            }
 
-        if (!statusOutput.isEmpty()) {
-            throw new AuroraException("The project directory must be clean according to 'git status'")
+            pkg(name: "${project.name}-${project.version}.zip")
+
+            os(
+                    name: "windows",
+                    iconPath: "mainIcon.ico"
+            ) {
+                commandLine {
+                    param("bin\\${project.name}.bat")
+                }
+            }
         }
     }
 }

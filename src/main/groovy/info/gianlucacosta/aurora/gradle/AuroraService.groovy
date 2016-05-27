@@ -20,6 +20,16 @@
 
 package info.gianlucacosta.aurora.gradle
 
+import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
+import info.gianlucacosta.aurora.gradle.settings.Author
+import info.gianlucacosta.aurora.gradle.settings.JavaVersion
+import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
+import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
+import info.gianlucacosta.aurora.gradle.tasks.DeleteGeneratedTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Jar
@@ -432,12 +442,9 @@ class AuroraService {
 
 
     private void setupTasks() {
-        project.tasks.create(name: "deleteGenerated", type: Delete) {
-            delete 'src/generated'
-        }
+        project.tasks.create(name: "deleteGenerated", type: DeleteGeneratedTask)
 
-        project.clean.dependsOn("deleteGenerated")
-
+        project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
@@ -445,15 +452,10 @@ class AuroraService {
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
 
+        project.clean.dependsOn("deleteGenerated")
+
 
         project.compileGeneratedJava.dependsOn("generateArtifactInfo")
-
-
-        project.tasks.create(name: 'assertRelease') << {
-            if (!project.isRelease) {
-                throw new AuroraException("The requested task requires a release version")
-            }
-        }
 
         project.processGeneratedResources.dependsOn("generateMainIcons")
 

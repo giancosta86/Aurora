@@ -18,30 +18,14 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
-
-import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+package info.gianlucacosta.aurora.gradle.settings
 
 /**
- * Aurora's plugin for Gradle, performing the required registrations
+ * Standard Java version
  */
-class AuroraPlugin implements Plugin<Project> {
-    @Override
-    void apply(Project project) {
-        project.ext.aurora = { Closure closure ->
-            AuroraSettings auroraSettings = new AuroraSettings()
-
-            closure.delegate = auroraSettings
-            closure.resolveStrategy = Closure.DELEGATE_FIRST
-            closure()
-
-            AuroraService auroraService = new AuroraService(project, auroraSettings)
-            auroraService.run()
-
-            project.ext.auroraSettings = auroraSettings
-        }
-
-    }
+class JavaVersion {
+    int major
+    int minor
+    int build
+    int update
 }
