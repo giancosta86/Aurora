@@ -442,6 +442,10 @@ class AuroraService {
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
 
+        project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
+        project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
+
+
         project.compileGeneratedJava.dependsOn("generateArtifactInfo")
 
 
@@ -450,6 +454,8 @@ class AuroraService {
                 throw new AuroraException("The requested task requires a release version")
             }
         }
+
+        project.processGeneratedResources.dependsOn("generateMainIcons")
 
 
         if (project.hasMoonLicense) {
@@ -486,11 +492,21 @@ class AuroraService {
 
 
         if (project.hasApplication) {
+            project.distributions {
+                main {
+                    contents {
+                        from("src/generated/dist")
+                    }
+                }
+            }
+
             project.distZip.dependsOn("assertRelease")
             project.distZip.dependsOn("check")
+            project.distZip.dependsOn("generateDistIcons")
 
             project.distTar.dependsOn("assertRelease")
             project.distTar.dependsOn("check")
+            project.distTar.dependsOn("generateDistIcons")
 
             project.generateAppDescriptor.dependsOn("distZip")
 

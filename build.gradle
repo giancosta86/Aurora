@@ -87,6 +87,11 @@ dependencies {
 
     compile localGroovy()
 
+    compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
+    compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+    compile 'org.apache.xmlgraphics:batik-codec:1.8'
+    compile 'org.jclarion:image4j:0.7'
+
     testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
     testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
 }
