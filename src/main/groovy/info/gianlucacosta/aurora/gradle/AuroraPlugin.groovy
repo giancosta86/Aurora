@@ -20,9 +20,14 @@
 
 package info.gianlucacosta.aurora.gradle
 
+import info.gianlucacosta.aurora.gradle.services.DynamicService
+
+import info.gianlucacosta.aurora.gradle.services.StaticService
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
+import org.gradle.BuildAdapter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.invocation.Gradle
 
 /**
  * Aurora's plugin for Gradle, performing the required registrations
@@ -32,6 +37,9 @@ class AuroraPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        StaticService staticService = new StaticService(project)
+        staticService.run()
+
         project.ext.aurora = { Closure closure ->
             AuroraSettings auroraSettings = new AuroraSettings()
 
@@ -39,11 +47,24 @@ class AuroraPlugin implements Plugin<Project> {
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure()
 
-            AuroraService auroraService = new AuroraService(project, auroraSettings)
-            auroraService.run()
-
             project.ext.auroraSettings = auroraSettings
+
+            DynamicService dynamicService = new DynamicService(project)
+            dynamicService.run()
         }
 
+
+        project.gradle.addBuildListener(new BuildAdapter() {
+            @Override
+            void projectsEvaluated(Gradle gradle) {
+                ensureAuroraSettings()
+            }
+
+            private void ensureAuroraSettings() {
+                if (project.auroraSettings == null) {
+                    throw new AuroraException("You need to employ the aurora{} block within the build script")
+                }
+            }
+        })
     }
 }

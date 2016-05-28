@@ -34,7 +34,7 @@ class GenerateMainIconsTask extends DefaultTask {
             throw new StopExecutionException()
         }
 
-        File iconResourcesDir = project.file("src/generated/resources/${project.group.toString().replace('.', '/')}/icons")
+        File iconResourcesDir = project.file("src/generated/resources/${project.groupId.replace('.', '/')}/icons")
         iconResourcesDir.mkdirs()
 
         [16, 32, 64, 128, 512].forEach {iconSize ->

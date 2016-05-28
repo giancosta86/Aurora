@@ -38,8 +38,6 @@ class AuroraSettings {
 
     JavaVersion requiredJavaVersion
 
-    boolean addDefaultRepositories = true
-
 
     def author(Closure closure) {
         Author author = new Author()

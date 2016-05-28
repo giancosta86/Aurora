@@ -40,10 +40,14 @@ class DslTest extends GroovyTestCase {
                 .withProjectDir(tempFolder.getRoot())
                 .build()
 
-        project.description = "A test project"
-
         project.plugins.apply("scala")
         project.plugins.apply("info.gianlucacosta.aurora")
+
+        project.group = "alpha"
+        project.archivesBaseName = "beta"
+
+
+        project.description = "A test project"
     }
 
 
@@ -83,54 +87,6 @@ class DslTest extends GroovyTestCase {
 
     void test_defaultConfiguration() {
         applyDefaultWith {}
-    }
-
-
-    void test_withoutDescription() {
-        shouldFail(AuroraException) {
-            applyDefaultWith {
-                project.description = null
-            }
-        }
-    }
-
-
-    void test_withoutDocTask() {
-        applyDefaultWith {}
-
-        assertEquals(
-                "scaladoc",
-                project.auroraSettings.docTask
-        )
-    }
-
-
-    void test_withoutGitHubUser() {
-        shouldFail(AuroraException) {
-            applyDefaultWith {
-                gitHubUser = null
-            }
-        }
-    }
-
-
-    void test_withoutAuthors() {
-        shouldFail(AuroraException) {
-            applyDefaultWith {
-                authors = null
-            }
-        }
-    }
-
-
-    void test_withoutBintraySettingsWithBintray() {
-        project.plugins.apply("com.jfrog.bintray")
-
-        shouldFail(AuroraException) {
-            applyDefaultWith {
-                bintraySettings = null
-            }
-        }
     }
 
 

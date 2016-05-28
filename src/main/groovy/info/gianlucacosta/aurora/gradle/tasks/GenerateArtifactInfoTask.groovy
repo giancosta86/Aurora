@@ -46,8 +46,8 @@ class GenerateArtifactInfoTask extends DefaultTask {
         String templateResourceName = "ArtifactInfo.${sourceExtension}.txt"
 
 
-        String groupLastComponent = project.group.toString().split("\\.").last()
-        String artifactId = project.archivesBaseName
+        String groupLastComponent = project.groupId.split("\\.").last()
+        String artifactId = project.artifactId
 
 
         String sourcePackage
@@ -58,9 +58,9 @@ class GenerateArtifactInfoTask extends DefaultTask {
                             .replaceAll("[^A-Za-z0-9]", "_")
                             .replaceAll("__+", "_")
 
-            sourcePackage = "${project.group}.${artifactIdPackageComponent}"
+            sourcePackage = "${project.groupId}.${artifactIdPackageComponent}"
         } else {
-            sourcePackage = project.group.toString()
+            sourcePackage = project.groupId
         }
 
 

@@ -18,53 +18,44 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.gradle
+package info.gianlucacosta.aurora.gradle.services
 
+import info.gianlucacosta.aurora.gradle.AuroraException
+import info.gianlucacosta.aurora.gradle.AuroraPlugin
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
-import info.gianlucacosta.aurora.gradle.settings.Author
 import info.gianlucacosta.aurora.gradle.settings.JavaVersion
-import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
-import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
-import info.gianlucacosta.aurora.gradle.tasks.CleanGeneratedTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
-import info.gianlucacosta.aurora.gradle.tasks.GeneratePomTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
 
 
 /**
- * Service configuring the project according to Aurora's settings
+ * Invoked as soon as the "aurora {}" block closes in the build script
  */
-class AuroraService {
+class DynamicService {
     private final Project project
     private final AuroraSettings auroraSettings
 
 
-    public AuroraService(Project project, AuroraSettings auroraSettings) {
+    DynamicService(Project project) {
         this.project = project
-        this.auroraSettings = auroraSettings
+        this.auroraSettings = project.auroraSettings
     }
 
 
-    public void run() {
-        initPluginFlags()
+    def run() {
+        initHasFlags()
 
         checkAuroraSettings()
 
-        checkProjectSettings()
+        checkProjectProperties()
 
         setupProjectProperties()
 
-        setupRepositories()
+        checkArtifactInfo()
 
         setupSourceSets()
 
         setupArtifacts()
-
-        setupBintray()
 
         setupTodo()
 
@@ -72,11 +63,13 @@ class AuroraService {
 
         setupGuiJava()
 
-        setupTasks()
+        setupBintray()
+
+        setupTaskDependencies()
     }
 
 
-    private void initPluginFlags() {
+    private void initHasFlags() {
         project.ext {
             hasJava = project.getPluginManager().hasPlugin("java")
 
@@ -95,8 +88,6 @@ class AuroraService {
             hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
 
             hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
-
-            isRelease = !project.version.toString().endsWith("-SNAPSHOT")
         }
     }
 
@@ -127,13 +118,17 @@ class AuroraService {
     }
 
 
-    private void checkProjectSettings() {
+    private void checkProjectProperties() {
+        if (!project.name) {
+            throw new AuroraException("The project name is missing")
+        }
+
         if (!project.description) {
             throw new AuroraException("The project description is missing")
         }
 
         if (!project.hasJava) {
-            throw new AuroraException("Aurora can only be applied to projects having the 'java' plugin")
+            throw new AuroraException("Aurora can only be applied to projects having - implicitly or explicitly - the 'java' plugin")
         }
 
         if (project.hasBintray) {
@@ -145,29 +140,39 @@ class AuroraService {
 
 
     private void setupProjectProperties() {
-        project.ext.url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
-
         if (!project.ext.has("facebookPage")) {
             project.ext.facebookPage = null
+        }
+
+        project.ext {
+            groupId = project.group.toString()
+
+            artifactId = project.archivesBaseName.toString()
+
+            isRelease = !project.version.toString().endsWith("-SNAPSHOT")
+
+            url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
         }
     }
 
 
-    private void setupRepositories() {
-        if (!auroraSettings.addDefaultRepositories) {
-            return
+
+    private void checkArtifactInfo() {
+        if (!project.groupId) {
+            throw new AuroraException("The group id must NOT be empty")
         }
 
-        project.repositories {
-            mavenLocal()
+        if (!project.artifactId) {
+            throw new AuroraException("The artifact id (archivesBaseName) must NOT be empty")
+        }
 
-            jcenter()
+        char artifactInitial = project.artifactId.charAt(0)
+        if (!Character.isLowerCase(artifactInitial)) {
+            throw new AuroraException("The artifact id (archivesBaseName) must be lowercase")
+        }
 
-            mavenCentral()
-
-            maven {
-                url "https://dl.bintray.com/giancosta86/Hephaestus"
-            }
+        if (!project.version) {
+            throw new AuroraException("The project version must NOT be empty")
         }
     }
 
@@ -213,6 +218,98 @@ class AuroraService {
     }
 
 
+    private void setupTodo() {
+        if (!project.hasTodo) {
+            return
+        }
+
+        project.todo.failIfFound = project.isRelease
+    }
+
+
+    private void setupJavaVersionCheck() {
+        if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
+            return
+        }
+
+        JavaVersion javaVersion = auroraSettings.requiredJavaVersion
+
+        project.tasks.create(name: 'createJavaVersionCheckScripts') {
+            File scriptsTempDirectory = project.file("${project.buildDir}/checkJava")
+            outputs.dir scriptsTempDirectory
+            doLast {
+                scriptsTempDirectory.mkdirs()
+
+                [
+                        "CheckJavaVersion.sh",
+                        "CheckJavaVersion.js"
+
+                ].forEach({ scriptName ->
+                    String scriptContent = this.getClass().getResource(scriptName).text
+                    File scriptFile = new File(scriptsTempDirectory, scriptName)
+                    scriptFile.text = scriptContent
+
+                    if (scriptName.endsWith(".sh")) {
+                        scriptFile.setExecutable(true)
+                    }
+                })
+            }
+        }
+
+        project.distributions {
+            main {
+                contents {
+                    from(project.createJavaVersionCheckScripts) {
+                        into "bin"
+                    }
+                }
+            }
+        }
+
+        project.startScripts {
+            windowsStartScriptGenerator.template =
+                    project.resources.text.fromString(
+                            'cscript //NoLogo "%~dp0CheckJavaVersion.js" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
+                                    + 'if %errorlevel% neq 0 exit /b %errorlevel%\n\n'
+                                    + windowsStartScriptGenerator.template.asString()
+                    )
+
+
+            unixStartScriptGenerator.template =
+                    project.resources.text.fromString(
+                            '#!/usr/bin/env bash\n'
+                                    + 'if ! "\\$(dirname "\\$0")/CheckJavaVersion.sh" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
+                                    + 'then\n'
+                                    + '\texit 1\n'
+                                    + 'fi\n\n'
+                                    + unixStartScriptGenerator.template.asString()
+                    )
+        }
+    }
+
+
+    private void setupGuiJava() {
+        if (!project.hasApplication || auroraSettings.commandLineApp) {
+            return
+        }
+
+        project.startScripts {
+            windowsStartScriptGenerator.template =
+                    project.resources.text.fromString(
+                            windowsStartScriptGenerator.template.asString()
+                                    .replace(
+                                    "java.exe",
+                                    "javaw.exe"
+                            )
+                                    .replace(
+                                    "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%",
+                                    "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%"
+                            )
+                    )
+        }
+    }
+
+
     private void setupBintray() {
         if (!project.hasBintray) {
             return
@@ -232,7 +329,7 @@ class AuroraService {
                     include "*.pom"
                 }
 
-                into "${project.group.toString().replace('.', '/')}/${project.archivesBaseName}/${project.version}"
+                into "${project.groupId.replace('.', '/')}/${project.artifactId}/${project.version}"
             }
 
             dryRun = false
@@ -300,109 +397,7 @@ class AuroraService {
     }
 
 
-    private void setupTodo() {
-        if (!project.hasTodo) {
-            return
-        }
-
-        project.todo.failIfFound = project.isRelease
-    }
-
-
-    private void setupJavaVersionCheck() {
-        if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
-            return
-        }
-
-        JavaVersion javaVersion = auroraSettings.requiredJavaVersion
-
-        project.tasks.create(name: 'createJavaVersionCheckScripts') {
-            File scriptsTempDirectory = project.file("${project.buildDir}/checkJava")
-            outputs.dir scriptsTempDirectory
-            doLast {
-                scriptsTempDirectory.mkdirs()
-
-                [
-                        "CheckJavaVersion.sh",
-                        "CheckJavaVersion.js"
-
-                ].forEach({ scriptName ->
-                    String scriptContent = this.getClass().getResource(scriptName).text
-                    File scriptFile = new File(scriptsTempDirectory, scriptName)
-                    scriptFile.text = scriptContent
-
-                    if (scriptName.endsWith(".sh")) {
-                        scriptFile.setExecutable(true)
-                    }
-                })
-            }
-        }
-
-        project.distributions {
-            main {
-                contents {
-                    from(project.createJavaVersionCheckScripts) {
-                        into "bin"
-                    }
-                }
-            }
-        }
-
-        project.startScripts {
-            windowsStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            'cscript //NoLogo "%~dp0CheckJavaVersion.js" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                                    + 'if %errorlevel% neq 0 exit /b %errorlevel%\n\n'
-                                    + windowsStartScriptGenerator.template.asString()
-                    )
-
-
-            unixStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            '#!/usr/bin/env bash\n'
-                            + 'if ! "\\$(dirname "\\$0")/CheckJavaVersion.sh" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                            + 'then\n'
-                            + '\texit 1\n'
-                            + 'fi\n\n'
-                            + unixStartScriptGenerator.template.asString()
-                    )
-        }
-    }
-
-
-    private void setupGuiJava() {
-        if (!project.hasApplication || auroraSettings.commandLineApp) {
-            return
-        }
-
-        project.startScripts {
-            windowsStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            windowsStartScriptGenerator.template.asString()
-                                    .replace(
-                                    "java.exe",
-                                    "javaw.exe"
-                            )
-                                    .replace(
-                                    "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%",
-                                    "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%"
-                            )
-                    )
-        }
-    }
-
-
-    private void setupTasks() {
-        project.tasks.create(name: "cleanGenerated", type: CleanGeneratedTask)
-        project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
-        project.tasks.create(name: "checkGit", type: CheckGitTask)
-        project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
-        project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
-        project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
-        project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
-        project.tasks.create(name: "generatePom", type: GeneratePomTask)
-
-
+    private void setupTaskDependencies() {
         project.clean.dependsOn("cleanGenerated")
 
         project.processGeneratedResources.dependsOn("generateMainIcons")
@@ -424,9 +419,7 @@ class AuroraService {
         }
 
 
-        if (project.isRelease) {
-            project.check.dependsOn("checkGit")
-        }
+        project.check.dependsOn("checkGit")
 
 
         if (project.hasTodo) {
@@ -435,7 +428,7 @@ class AuroraService {
 
 
         if (project.hasBintray) {
-            project._bintrayRecordingCopy.dependsOn("assemble", "assertRelease")
+            project.bintrayUpload.dependsOn("assemble", "assertRelease")
         }
 
 

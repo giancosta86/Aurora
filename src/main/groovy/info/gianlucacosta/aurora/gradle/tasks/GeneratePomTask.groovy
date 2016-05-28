@@ -37,9 +37,7 @@ class GeneratePomTask extends DefaultTask {
                 name project.name
                 description project.description
 
-                group project.group
-                artifactId project.archivesBaseName
-                version project.version
+                artifactId project.artifactId
 
                 url project.ext.url
 
@@ -63,6 +61,6 @@ class GeneratePomTask extends DefaultTask {
                     developerConnection "scm:git:git@github.com:${auroraSettings.gitHubUser}/${project.name}.git"
                 }
             }
-        }.writeTo("${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}/${project.archivesBaseName}-${project.version}.pom")
+        }.writeTo("${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}/${project.artifactId}-${project.version}.pom")
     }
 }
