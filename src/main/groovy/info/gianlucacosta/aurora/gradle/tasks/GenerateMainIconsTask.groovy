@@ -22,6 +22,7 @@ package info.gianlucacosta.aurora.gradle.tasks
 
 import info.gianlucacosta.aurora.utils.SvgToPngConverter
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
 class GenerateMainIconsTask extends DefaultTask {
@@ -30,7 +31,7 @@ class GenerateMainIconsTask extends DefaultTask {
         File svgSourceFile = project.file("mainIcon.svg")
 
         if (!svgSourceFile.exists()) {
-            return
+            throw new StopExecutionException()
         }
 
         File iconResourcesDir = project.file("src/generated/resources/${project.group.toString().replace('.', '/')}/icons")

@@ -23,6 +23,7 @@ package info.gianlucacosta.aurora.gradle.tasks
 import info.gianlucacosta.aurora.utils.PngToIcoConverter
 import info.gianlucacosta.aurora.utils.SvgToPngConverter
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
 class GenerateDistIconsTask extends DefaultTask {
@@ -31,7 +32,7 @@ class GenerateDistIconsTask extends DefaultTask {
         File svgSourceFile = project.file("mainIcon.svg")
 
         if (!svgSourceFile.exists()) {
-            return
+            throw new StopExecutionException()
         }
 
         File distDirectory = project.file("src/generated/dist")
