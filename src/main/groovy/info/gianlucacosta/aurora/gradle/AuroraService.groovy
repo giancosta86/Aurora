@@ -394,36 +394,28 @@ class AuroraService {
 
     private void setupTasks() {
         project.tasks.create(name: "cleanGenerated", type: CleanGeneratedTask)
-
         project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
-
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
-
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
 
+
         project.clean.dependsOn("cleanGenerated")
-
-
-        project.compileGeneratedJava.dependsOn("generateArtifactInfo")
 
         project.processGeneratedResources.dependsOn("generateMainIcons")
 
 
         if (project.hasMoonLicense) {
-            project.compileJava.dependsOn("setNotices")
-            project.processResources.dependsOn("setNotices")
-
-            project.checkGit.dependsOn("setNotices")
+            project.compileGeneratedJava.dependsOn("setNotices")
+            project.processGeneratedResources.dependsOn("setNotices")
 
             project.setNotices.dependsOn("generateArtifactInfo")
+
+            project.checkGit.dependsOn("setNotices")
         }
-
-
-        project.uploadArchives.dependsOn("check")
 
 
         if (project.hasMaven) {
