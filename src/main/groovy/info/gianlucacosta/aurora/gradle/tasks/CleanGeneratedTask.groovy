@@ -22,8 +22,8 @@ package info.gianlucacosta.aurora.gradle.tasks
 
 import org.gradle.api.tasks.Delete
 
-class DeleteGeneratedTask extends Delete {
-    DeleteGeneratedTask() {
+class CleanGeneratedTask extends Delete {
+    CleanGeneratedTask() {
         setDelete('src/generated')
     }
 }

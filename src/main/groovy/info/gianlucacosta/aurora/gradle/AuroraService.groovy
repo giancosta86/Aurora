@@ -25,13 +25,13 @@ import info.gianlucacosta.aurora.gradle.settings.Author
 import info.gianlucacosta.aurora.gradle.settings.JavaVersion
 import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
 import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
-import info.gianlucacosta.aurora.gradle.tasks.DeleteGeneratedTask
+import info.gianlucacosta.aurora.gradle.tasks.CleanGeneratedTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
+import info.gianlucacosta.aurora.gradle.tasks.GeneratePomTask
 import org.gradle.api.Project
-import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Jar
 
 
@@ -39,9 +39,6 @@ import org.gradle.api.tasks.bundling.Jar
  * Service configuring the project according to Aurora's settings
  */
 class AuroraService {
-    private static final String MAVEN_TEMP_DIRECTORY = "mavenTemp"
-
-
     private final Project project
     private final AuroraSettings auroraSettings
 
@@ -66,8 +63,6 @@ class AuroraService {
         setupSourceSets()
 
         setupArtifacts()
-
-        setupMavenArtifacts()
 
         setupBintray()
 
@@ -218,51 +213,6 @@ class AuroraService {
     }
 
 
-    private void setupMavenArtifacts() {
-        if (!project.hasMaven) {
-            return
-        }
-
-        project.uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(
-                            url: "file://" + new File(project.buildDir, MAVEN_TEMP_DIRECTORY)
-                    )
-
-                    pom.project {
-                        name project.name
-                        description project.description
-
-                        url project.ext.url
-
-
-                        developers {
-                            for (Author author : auroraSettings.authors) {
-                                developer {
-                                    name author.name
-                                    email author.email
-
-                                    if (author.url) {
-                                        url author.url
-                                    }
-                                }
-                            }
-                        }
-
-                        scm {
-                            url project.ext.url
-                            connection "scm:git:git://github.com/${auroraSettings.gitHubUser}/${project.name}.git"
-                            developerConnection "scm:git:git@github.com:${auroraSettings.gitHubUser}/${project.name}.git"
-                        }
-
-                    }
-                }
-            }
-        }
-    }
-
-
     private void setupBintray() {
         if (!project.hasBintray) {
             return
@@ -275,13 +225,14 @@ class AuroraService {
             user = auroraSettings.bintraySettings.user
             key = auroraSettings.bintraySettings.key
 
-
             filesSpec {
-                from("build/${MAVEN_TEMP_DIRECTORY}") {
-                    include "**/${project.version}/*.jar"
-                    include "**/${project.version}/*.pom"
+                from "${project.buildDir}/libs"
+
+                from("${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}") {
+                    include "*.pom"
                 }
-                into '.'
+
+                into "${project.group.toString().replace('.', '/')}/${project.archivesBaseName}/${project.version}"
             }
 
             dryRun = false
@@ -442,7 +393,7 @@ class AuroraService {
 
 
     private void setupTasks() {
-        project.tasks.create(name: "deleteGenerated", type: DeleteGeneratedTask)
+        project.tasks.create(name: "cleanGenerated", type: CleanGeneratedTask)
 
         project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
         project.tasks.create(name: "checkGit", type: CheckGitTask)
@@ -452,7 +403,9 @@ class AuroraService {
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
 
-        project.clean.dependsOn("deleteGenerated")
+        project.tasks.create(name: "generatePom", type: GeneratePomTask)
+
+        project.clean.dependsOn("cleanGenerated")
 
 
         project.compileGeneratedJava.dependsOn("generateArtifactInfo")
@@ -475,6 +428,7 @@ class AuroraService {
 
         if (project.hasMaven) {
             project.install.dependsOn("check")
+            project.assemble.dependsOn("generatePom")
         }
 
 
@@ -489,7 +443,7 @@ class AuroraService {
 
 
         if (project.hasBintray) {
-            project._bintrayRecordingCopy.dependsOn("uploadArchives", "assertRelease")
+            project._bintrayRecordingCopy.dependsOn("assemble", "assertRelease")
         }
 
 

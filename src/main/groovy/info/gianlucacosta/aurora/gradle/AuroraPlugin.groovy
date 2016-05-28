@@ -28,6 +28,8 @@ import org.gradle.api.Project
  * Aurora's plugin for Gradle, performing the required registrations
  */
 class AuroraPlugin implements Plugin<Project> {
+    public static final String MAVEN_TEMP_DIRECTORY_NAME = "mavenTemp"
+
     @Override
     void apply(Project project) {
         project.ext.aurora = { Closure closure ->
