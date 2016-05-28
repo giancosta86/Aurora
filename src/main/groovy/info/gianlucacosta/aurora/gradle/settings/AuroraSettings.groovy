@@ -21,6 +21,7 @@
 package info.gianlucacosta.aurora.gradle.settings
 
 import info.gianlucacosta.aurora.gradle.AuroraException
+import info.gianlucacosta.aurora.utils.Log
 
 /**
  * Settings underlying the <b>aurora</b> block.
@@ -47,6 +48,8 @@ class AuroraSettings {
 
         closure()
 
+        Log.debug("Author: ${author.dump()}")
+
         if (!author.name) {
             throw new AuroraException("Missing author name")
         }
@@ -68,6 +71,8 @@ class AuroraSettings {
         closure.resolveStrategy = Closure.DELEGATE_FIRST
 
         closure()
+
+        Log.debug("Bintray settings: ${bintraySettings.dump()}")
 
 
         if (!bintraySettings.repo) {
@@ -93,6 +98,8 @@ class AuroraSettings {
         closure.resolveStrategy = Closure.DELEGATE_FIRST
 
         closure()
+
+        Log.debug("Required Java version: ${requiredJavaVersion.dump()}")
 
         this.requiredJavaVersion = requiredJavaVersion
     }

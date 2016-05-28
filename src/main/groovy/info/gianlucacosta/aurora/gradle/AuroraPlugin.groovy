@@ -24,6 +24,7 @@ import info.gianlucacosta.aurora.gradle.services.DynamicService
 
 import info.gianlucacosta.aurora.gradle.services.StaticService
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.BuildAdapter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,6 +38,7 @@ class AuroraPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        Log.debug("Running the static service...")
         StaticService staticService = new StaticService(project)
         staticService.run()
 
@@ -46,6 +48,8 @@ class AuroraPlugin implements Plugin<Project> {
             closure.delegate = auroraSettings
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure()
+
+            Log.debug("Aurora settings: ${auroraSettings.dump()}")
 
             project.ext.auroraSettings = auroraSettings
 
@@ -64,6 +68,8 @@ class AuroraPlugin implements Plugin<Project> {
                 if (project.auroraSettings == null) {
                     throw new AuroraException("You need to employ the aurora{} block within the build script")
                 }
+
+                Log.debug("Aurora settings are available")
             }
         })
     }

@@ -23,11 +23,14 @@ package info.gianlucacosta.aurora.gradle.services
 import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
 import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
 import info.gianlucacosta.aurora.gradle.tasks.CleanGeneratedTask
+import info.gianlucacosta.aurora.gradle.tasks.SetupScaladocTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateJavaVersionCheckScriptsTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
 import info.gianlucacosta.aurora.gradle.tasks.GeneratePomTask
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.Project
 
 /**
@@ -57,6 +60,8 @@ class StaticService {
 
 
     private void setupRepositories() {
+        Log.info("Setting repositories...")
+
         project.repositories {
             mavenLocal()
 
@@ -72,6 +77,8 @@ class StaticService {
 
 
     private void createTasks() {
+        Log.debug("Creating tasks...")
+
         project.tasks.create(name: "cleanGenerated", type: CleanGeneratedTask)
         project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
         project.tasks.create(name: "checkGit", type: CheckGitTask)
@@ -80,5 +87,8 @@ class StaticService {
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
+        project.tasks.create(name: "generateJavaVersionCheckScripts", type: GenerateJavaVersionCheckScriptsTask)
+        project.tasks.create(name: "setupScaladoc", type: SetupScaladocTask)
+
     }
 }

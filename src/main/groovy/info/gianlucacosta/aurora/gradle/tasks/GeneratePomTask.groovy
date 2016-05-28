@@ -23,6 +23,7 @@ package info.gianlucacosta.aurora.gradle.tasks
 import info.gianlucacosta.aurora.gradle.AuroraPlugin
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
 import info.gianlucacosta.aurora.gradle.settings.Author
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -31,6 +32,10 @@ class GeneratePomTask extends DefaultTask {
     @TaskAction
     def generatePom() {
         AuroraSettings auroraSettings = project.auroraSettings
+
+        String pomPath = "${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}/${project.artifactId}-${project.version}.pom"
+
+        Log.info("Generating POM file: ${pomPath}")
 
         project.pom {
             project {
@@ -61,6 +66,6 @@ class GeneratePomTask extends DefaultTask {
                     developerConnection "scm:git:git@github.com:${auroraSettings.gitHubUser}/${project.name}.git"
                 }
             }
-        }.writeTo("${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}/${project.artifactId}-${project.version}.pom")
+        }.writeTo(pomPath)
     }
 }

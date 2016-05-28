@@ -20,32 +20,26 @@
 
 package info.gianlucacosta.aurora.gradle.tasks
 
-import info.gianlucacosta.aurora.utils.Log
-import info.gianlucacosta.aurora.utils.SvgToPngConverter
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
-class GenerateMainIconsTask extends DefaultTask {
+class GenerateJavaVersionCheckScriptsTask extends DefaultTask {
     @TaskAction
-    def generateIcons() {
-        File svgSourceFile = project.file("mainIcon.svg")
+    def run() {
+        File scriptsTempDirectory = new File("src/generated/dist/bin")
+        scriptsTempDirectory.mkdirs()
 
-        if (!svgSourceFile.exists()) {
-            throw new StopExecutionException()
-        }
+        [
+                "CheckJavaVersion.sh",
+                "CheckJavaVersion.js"
+        ].forEach({ scriptName ->
+            String scriptContent = this.getClass().getResource(scriptName).text
+            File scriptFile = new File(scriptsTempDirectory, scriptName)
+            scriptFile.text = scriptContent
 
-        File iconResourcesDir = project.file("src/generated/resources/${project.groupId.replace('.', '/')}/icons")
-        iconResourcesDir.mkdirs()
-
-        Log.debug("Source SVG icon file: ${svgSourceFile.getAbsolutePath()}")
-
-        [16, 32, 64, 128, 512].forEach {iconSize ->
-            File outputFile = new File(iconResourcesDir, "mainIcon${iconSize}.png")
-
-            Log.debug("Target PNG icon file: ${outputFile.getAbsolutePath()}")
-
-            SvgToPngConverter.convert(svgSourceFile, outputFile, iconSize)
-        }
+            if (scriptName.endsWith(".sh")) {
+                scriptFile.setExecutable(true)
+            }
+        })
     }
 }

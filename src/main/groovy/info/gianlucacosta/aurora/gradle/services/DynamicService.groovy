@@ -24,6 +24,7 @@ import info.gianlucacosta.aurora.gradle.AuroraException
 import info.gianlucacosta.aurora.gradle.AuroraPlugin
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
 import info.gianlucacosta.aurora.gradle.settings.JavaVersion
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
 
@@ -55,13 +56,13 @@ class DynamicService {
 
         setupSourceSets()
 
-        setupArtifacts()
+        setupAdditionalArtifacts()
 
         setupTodo()
 
         setupJavaVersionCheck()
 
-        setupGuiJava()
+        setupJavaw()
 
         setupBintray()
 
@@ -101,6 +102,8 @@ class DynamicService {
             } else {
                 auroraSettings.docTask = "javadoc"
             }
+
+            Log.info("Inferred doc task: ${auroraSettings.docTask}")
         }
 
         if (!auroraSettings.gitHubUser) {
@@ -144,6 +147,8 @@ class DynamicService {
             project.ext.facebookPage = null
         }
 
+        Log.info("Facebook page: ${project.facebookPage}")
+
         project.ext {
             groupId = project.group.toString()
 
@@ -153,6 +158,8 @@ class DynamicService {
 
             url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
         }
+
+        Log.debug("Project extensions: ${project.ext.dump()}")
     }
 
 
@@ -178,6 +185,9 @@ class DynamicService {
 
 
     private void setupSourceSets() {
+        Log.debug("Defining the source sets...")
+
+
         project.sourceSets {
             generated
         }
@@ -191,8 +201,9 @@ class DynamicService {
     }
 
 
-    private void setupArtifacts() {
+    private void setupAdditionalArtifacts() {
         if (!project.hasMaven) {
+            Log.info("Skipping additional artifacts configuration")
             return
         }
 
@@ -220,6 +231,7 @@ class DynamicService {
 
     private void setupTodo() {
         if (!project.hasTodo) {
+            Log.info("Skipping todo configuration")
             return
         }
 
@@ -229,42 +241,11 @@ class DynamicService {
 
     private void setupJavaVersionCheck() {
         if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
+            Log.info("Skipping Java version check configuration")
             return
         }
 
         JavaVersion javaVersion = auroraSettings.requiredJavaVersion
-
-        project.tasks.create(name: 'createJavaVersionCheckScripts') {
-            File scriptsTempDirectory = project.file("${project.buildDir}/checkJava")
-            outputs.dir scriptsTempDirectory
-            doLast {
-                scriptsTempDirectory.mkdirs()
-
-                [
-                        "CheckJavaVersion.sh",
-                        "CheckJavaVersion.js"
-
-                ].forEach({ scriptName ->
-                    String scriptContent = this.getClass().getResource(scriptName).text
-                    File scriptFile = new File(scriptsTempDirectory, scriptName)
-                    scriptFile.text = scriptContent
-
-                    if (scriptName.endsWith(".sh")) {
-                        scriptFile.setExecutable(true)
-                    }
-                })
-            }
-        }
-
-        project.distributions {
-            main {
-                contents {
-                    from(project.createJavaVersionCheckScripts) {
-                        into "bin"
-                    }
-                }
-            }
-        }
 
         project.startScripts {
             windowsStartScriptGenerator.template =
@@ -288,8 +269,9 @@ class DynamicService {
     }
 
 
-    private void setupGuiJava() {
+    private void setupJavaw() {
         if (!project.hasApplication || auroraSettings.commandLineApp) {
+            Log.info("Skipping Javaw setup")
             return
         }
 
@@ -312,6 +294,7 @@ class DynamicService {
 
     private void setupBintray() {
         if (!project.hasBintray) {
+            Log.info("Skipping Bintray setup")
             return
         }
 
@@ -374,6 +357,7 @@ class DynamicService {
     private void setupBintrayCredentials() {
         String sourcePropertyFilePath = System.getenv("BINTRAY_CREDENTIALS_FILE")
         if (sourcePropertyFilePath == null) {
+            Log.info("Environment variable for Bintray's credentials file not set")
             return
         }
 
@@ -382,16 +366,19 @@ class DynamicService {
         if (!auroraSettings.bintraySettings.user || !auroraSettings.bintraySettings.key) {
             File sourcePropertyFile = new File(sourcePropertyFilePath)
             if (sourcePropertyFile.isFile()) {
+                Log.info("Bintray credentials file found at: ${sourcePropertyFile.getAbsolutePath()}. Now loading...")
                 securityProperties.load(new FileInputStream(sourcePropertyFile))
             }
         }
 
 
         if (!auroraSettings.bintraySettings.user) {
+            Log.info("bintrayUser recovered from Bintray's credentials file")
             auroraSettings.bintraySettings.user = securityProperties.getProperty("bintrayUser")
         }
 
         if (!auroraSettings.bintraySettings.key) {
+            Log.info("key recovered from Bintray's credentials file")
             auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
         }
     }
@@ -416,6 +403,10 @@ class DynamicService {
         if (project.hasMaven) {
             project.install.dependsOn("check")
             project.assemble.dependsOn("generatePom")
+        }
+
+        if (project.hasScala) {
+            project.scaladoc.dependsOn("setupScaladoc")
         }
 
 
@@ -444,10 +435,12 @@ class DynamicService {
             project.distZip.dependsOn("assertRelease")
             project.distZip.dependsOn("check")
             project.distZip.dependsOn("generateDistIcons")
+            project.distZip.dependsOn("generateJavaVersionCheckScripts")
 
             project.distTar.dependsOn("assertRelease")
             project.distTar.dependsOn("check")
             project.distTar.dependsOn("generateDistIcons")
+            project.distTar.dependsOn("generateJavaVersionCheckScripts")
 
             project.generateAppDescriptor.dependsOn("distZip")
 

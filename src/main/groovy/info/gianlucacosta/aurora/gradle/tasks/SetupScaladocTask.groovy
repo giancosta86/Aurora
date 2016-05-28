@@ -20,32 +20,14 @@
 
 package info.gianlucacosta.aurora.gradle.tasks
 
-import info.gianlucacosta.aurora.utils.Log
-import info.gianlucacosta.aurora.utils.SvgToPngConverter
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
-class GenerateMainIconsTask extends DefaultTask {
+class SetupScaladocTask extends DefaultTask {
     @TaskAction
-    def generateIcons() {
-        File svgSourceFile = project.file("mainIcon.svg")
+    def setupScaladoc() {
+        File requestedDir = new File(project.buildDir, "resources/main")
 
-        if (!svgSourceFile.exists()) {
-            throw new StopExecutionException()
-        }
-
-        File iconResourcesDir = project.file("src/generated/resources/${project.groupId.replace('.', '/')}/icons")
-        iconResourcesDir.mkdirs()
-
-        Log.debug("Source SVG icon file: ${svgSourceFile.getAbsolutePath()}")
-
-        [16, 32, 64, 128, 512].forEach {iconSize ->
-            File outputFile = new File(iconResourcesDir, "mainIcon${iconSize}.png")
-
-            Log.debug("Target PNG icon file: ${outputFile.getAbsolutePath()}")
-
-            SvgToPngConverter.convert(svgSourceFile, outputFile, iconSize)
-        }
+        requestedDir.mkdirs()
     }
 }

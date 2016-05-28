@@ -21,6 +21,7 @@
 package info.gianlucacosta.aurora.gradle.tasks
 
 import info.gianlucacosta.aurora.gradle.AuroraException
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -32,10 +33,19 @@ class CheckGitTask extends DefaultTask {
     @TaskAction
     def checkGitStatus() {
         File gitFolder = project.file(".git")
+        Log.debug("Expected Git folder: ${gitFolder.getAbsolutePath()}")
 
         if (!gitFolder.isDirectory()) {
+            Log.info("Git folder not found - skipping Git check")
             throw new StopExecutionException()
         }
+
+
+        if (!project.isRelease) {
+            Log.info("Not in release - skipping Git check")
+            throw new StopExecutionException()
+        }
+
 
         def outputBuffer = new ByteArrayOutputStream()
 
@@ -47,6 +57,8 @@ class CheckGitTask extends DefaultTask {
         }
 
         String statusOutput = outputBuffer.toString()
+
+        Log.debug("Git status output: ${statusOutput}")
 
         if (!statusOutput.isEmpty()) {
             throw new AuroraException("The project directory must be clean according to 'git status'")
