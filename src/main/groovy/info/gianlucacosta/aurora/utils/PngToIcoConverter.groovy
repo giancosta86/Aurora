@@ -18,24 +18,20 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.utils;
+package info.gianlucacosta.aurora.utils
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
-import net.sf.image4j.codec.ico.ICOEncoder;
+import javafx.embed.swing.SwingFXUtils
+import javafx.scene.image.Image
+import net.sf.image4j.codec.ico.ICOEncoder
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
+import java.awt.image.BufferedImage
 
 public class PngToIcoConverter {
     public static void convert(File inputFile, File outputFile) {
-        try (FileInputStream inputStream = new FileInputStream(inputFile)) {
-            Image inputImage = new Image(inputStream);
-            BufferedImage bufferedInputImage = SwingFXUtils.fromFXImage(inputImage, null);
-            ICOEncoder.write(bufferedInputImage, outputFile);
-        } catch(Exception ex) {
-            throw new RuntimeException(ex);
+        inputFile.withInputStream {inputStream ->
+            Image inputImage = new Image(inputStream)
+            BufferedImage bufferedInputImage = SwingFXUtils.fromFXImage(inputImage, null)
+            ICOEncoder.write(bufferedInputImage, outputFile)
         }
     }
 

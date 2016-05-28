@@ -18,35 +18,26 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.aurora.utils;
+package info.gianlucacosta.aurora.utils
 
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.PNGTranscoder
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-
-public class SvgToPngConverter {
+class SvgToPngConverter {
     public static void convert(File inputFile, File outputFile, float outputSize) {
-        PNGTranscoder transcoder = new PNGTranscoder();
+        PNGTranscoder transcoder = new PNGTranscoder()
 
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, outputSize);
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, outputSize);
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, outputSize)
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, outputSize)
 
-        try {
-            String sourceURL = inputFile.toURI().toString();
-            TranscoderInput transcoderInput = new TranscoderInput(sourceURL);
+        String sourceURL = inputFile.toURI().toString()
+        TranscoderInput transcoderInput = new TranscoderInput(sourceURL)
 
-            try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-                TranscoderOutput transcoderOutput = new TranscoderOutput(outputStream);
-                transcoder.transcode(transcoderInput, transcoderOutput);
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        outputFile.withOutputStream { outputStream ->
+            TranscoderOutput transcoderOutput = new TranscoderOutput(outputStream)
+            transcoder.transcode(transcoderInput, transcoderOutput)
         }
-
     }
 
     private SvgToPngConverter(){}
