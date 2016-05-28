@@ -60,6 +60,8 @@ class DynamicService {
 
         setupTodo()
 
+        setupAdditionalApplicationFiles()
+
         setupJavaVersionCheck()
 
         setupJavaw()
@@ -239,6 +241,21 @@ class DynamicService {
     }
 
 
+    private void setupAdditionalApplicationFiles() {
+        if (!project.hasApplication) {
+            Log.info("Skipping the setup of additional application files")
+            return
+        }
+
+        project.distributions {
+            main {
+                contents {
+                    from("src/generated/dist")
+                }
+            }
+        }
+    }
+
     private void setupJavaVersionCheck() {
         if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
             Log.info("Skipping Java version check configuration")
@@ -394,9 +411,9 @@ class DynamicService {
             project.compileGeneratedJava.dependsOn("setNotices")
             project.processGeneratedResources.dependsOn("setNotices")
 
-            project.setNotices.dependsOn("generateArtifactInfo")
-
             project.checkGit.dependsOn("setNotices")
+
+            project.setNotices.dependsOn("generateArtifactInfo")
         }
 
 
@@ -419,19 +436,11 @@ class DynamicService {
 
 
         if (project.hasBintray) {
-            project.bintrayUpload.dependsOn("assemble", "assertRelease")
+            project.bintrayUpload.dependsOn("assemble", "check", "assertRelease")
         }
 
 
         if (project.hasApplication) {
-            project.distributions {
-                main {
-                    contents {
-                        from("src/generated/dist")
-                    }
-                }
-            }
-
             project.distZip.dependsOn("assertRelease")
             project.distZip.dependsOn("check")
             project.distZip.dependsOn("generateDistIcons")
