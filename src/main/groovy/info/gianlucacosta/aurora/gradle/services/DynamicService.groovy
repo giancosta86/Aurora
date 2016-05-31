@@ -55,7 +55,7 @@ class DynamicService {
 
         checkArtifactInfo()
 
-        setupAdditionalArtifacts()
+        setupArtifacts()
 
         setupTodo()
 
@@ -185,7 +185,12 @@ class DynamicService {
     }
 
 
-    private void setupAdditionalArtifacts() {
+    private void setupArtifacts() {
+        project.jar {
+            from project.sourceSets.generated.output
+        }
+
+
         if (!project.hasMaven) {
             Log.info("Skipping additional artifacts configuration")
             return
