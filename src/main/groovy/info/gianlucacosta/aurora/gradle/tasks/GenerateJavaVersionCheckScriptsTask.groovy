@@ -23,6 +23,9 @@ package info.gianlucacosta.aurora.gradle.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Generates scripts to ensure the proper Java version is installed
+ */
 class GenerateJavaVersionCheckScriptsTask extends DefaultTask {
     @TaskAction
     def run() {

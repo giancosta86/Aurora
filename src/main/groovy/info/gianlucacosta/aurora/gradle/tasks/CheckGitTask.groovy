@@ -27,11 +27,22 @@ import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Task stopping the process whenever the project is versioned with Git <strong>and</strong> its Git status is not clean
+ * Stops the build process whenever the project:
+ * <ol>
+ *     <li>is in release mode (<b>project.isRelease</b> is true)</li>
+ *     <li>is versioned with Git</li>
+ *     <li>its Git status is not clean.</li>
+ * </ol>
  */
 class CheckGitTask extends DefaultTask {
     @TaskAction
     def checkGitStatus() {
+        if (!project.isRelease) {
+            Log.info("Not in release - skipping Git check")
+            throw new StopExecutionException()
+        }
+
+
         File gitFolder = project.file(".git")
         Log.debug("Expected Git folder: ${gitFolder.getAbsolutePath()}")
 
@@ -39,13 +50,6 @@ class CheckGitTask extends DefaultTask {
             Log.info("Git folder not found - skipping Git check")
             throw new StopExecutionException()
         }
-
-
-        if (!project.isRelease) {
-            Log.info("Not in release - skipping Git check")
-            throw new StopExecutionException()
-        }
-
 
         def outputBuffer = new ByteArrayOutputStream()
 

@@ -22,11 +22,12 @@ package info.gianlucacosta.aurora.gradle.tasks
 
 import groovy.json.StringEscapeUtils
 import info.gianlucacosta.aurora.gradle.AuroraException
+import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Task generating a class providing the information for the current artifact
+ * Generates a class providing the information for the current artifact
  */
 class GenerateArtifactInfoTask extends DefaultTask {
     @TaskAction
@@ -39,8 +40,8 @@ class GenerateArtifactInfoTask extends DefaultTask {
             languageDirectoryName = "groovy"
         } else {
             languageDirectoryName = "java"
-
         }
+        Log.debug("Language directory name: ${languageDirectoryName}")
 
         String sourceExtension = languageDirectoryName
         String templateResourceName = "ArtifactInfo.${sourceExtension}.txt"
@@ -63,9 +64,15 @@ class GenerateArtifactInfoTask extends DefaultTask {
             sourcePackage = project.groupId
         }
 
+        Log.debug("Source package: ${sourcePackage}")
+
 
         String sourcePackageRelativePath = sourcePackage.replaceAll("\\.", "/")
+        Log.debug("Source package relative path: ${sourcePackageRelativePath}")
+
+
         File sourcePackageDirectory = project.file("src/generated/${languageDirectoryName}/${sourcePackageRelativePath}")
+        Log.debug("Source package directory: ${sourcePackageDirectory}")
 
         if (!sourcePackageDirectory.exists()) {
             if (!sourcePackageDirectory.mkdirs()) {
@@ -79,6 +86,8 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
         String sourceFileName = "ArtifactInfo.${sourceExtension}"
         File sourceFile = new File(sourcePackageDirectory, sourceFileName)
+
+        Log.debug("Artifact Info source file: ${sourceFile}")
 
         sourceFile.text = sourceFileContent
     }

@@ -31,7 +31,7 @@ import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 
 /**
- * Aurora's plugin for Gradle, performing the required registrations
+ * Aurora's plugin for Gradle
  */
 class AuroraPlugin implements Plugin<Project> {
     public static final String MAVEN_TEMP_DIRECTORY_NAME = "mavenTemp"
@@ -41,6 +41,7 @@ class AuroraPlugin implements Plugin<Project> {
         Log.debug("Running the static service...")
         StaticService staticService = new StaticService(project)
         staticService.run()
+
 
         project.ext.aurora = { Closure closure ->
             AuroraSettings auroraSettings = new AuroraSettings()

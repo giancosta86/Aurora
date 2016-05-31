@@ -27,6 +27,9 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Generates icons (a PNG and an ICO) packaged into the archives created by the "application" plugin
+ */
 class GenerateDistIconsTask extends DefaultTask {
     @TaskAction
     def generateIcons() {

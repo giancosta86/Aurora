@@ -24,7 +24,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Task generating a MoonDeploy app descriptor having sensible defaults
+ * Generates a MoonDeploy app descriptor having sensible defaults
  */
 class GenerateAppDescriptorTask extends DefaultTask {
     @TaskAction

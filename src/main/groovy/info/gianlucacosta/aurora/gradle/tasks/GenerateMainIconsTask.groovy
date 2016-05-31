@@ -26,6 +26,9 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Generates a set of main icons (PNG files), which can be used, for example, as window icons
+ */
 class GenerateMainIconsTask extends DefaultTask {
     @TaskAction
     def generateIcons() {

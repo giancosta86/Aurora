@@ -256,6 +256,7 @@ class DynamicService {
         }
     }
 
+
     private void setupJavaVersionCheck() {
         if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
             Log.info("Skipping Java version check configuration")
@@ -317,6 +318,7 @@ class DynamicService {
 
 
         setupBintrayCredentials()
+
 
         project.bintray {
             user = auroraSettings.bintraySettings.user
@@ -421,6 +423,7 @@ class DynamicService {
             project.install.dependsOn("check")
             project.assemble.dependsOn("generatePom")
         }
+
 
         if (project.hasScala) {
             project.scaladoc.dependsOn("setupScaladoc")

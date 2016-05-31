@@ -27,7 +27,9 @@ import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-
+/**
+ * Creates a Maven POM for the project
+ */
 class GeneratePomTask extends DefaultTask {
     @TaskAction
     def generatePom() {
