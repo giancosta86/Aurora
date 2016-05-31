@@ -32,15 +32,7 @@ import org.gradle.api.tasks.TaskAction
 class GenerateArtifactInfoTask extends DefaultTask {
     @TaskAction
     def generateAppInfo() {
-        String languageDirectoryName
-
-        if (project.hasScala) {
-            languageDirectoryName = "scala"
-        } else if (project.hasGroovy) {
-            languageDirectoryName = "groovy"
-        } else {
-            languageDirectoryName = "java"
-        }
+        String languageDirectoryName = project.mainLanguage
         Log.debug("Language directory name: ${languageDirectoryName}")
 
         String sourceExtension = languageDirectoryName

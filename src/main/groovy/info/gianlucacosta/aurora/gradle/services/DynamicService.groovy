@@ -160,6 +160,15 @@ class DynamicService {
             url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
         }
 
+
+        if (project.hasScala) {
+            project.ext.mainLanguage = "scala"
+        } else if (project.hasGroovy) {
+            project.ext.mainLanguage = "groovy"
+        } else {
+            project.ext.mainLanguage = "java"
+        }
+
         Log.debug("Project extensions: ${project.ext.dump()}")
     }
 
