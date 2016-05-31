@@ -204,7 +204,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'info.gianlucacosta.aurora:aurora:CHOOSE_LATEST_VERSION'
+        classpath 'info.gianlucacosta.aurora:aurora:CHOOSE_VERSION'
     }
 }
 '''
@@ -216,6 +216,12 @@ apply plugin: 'info.gianlucacosta.aurora'
 '''
 
 Aurora can be applied before or after other plugins, *but* its **aurora{...}** DSL block must occur after every *apply* introducing a plugin referenced by Aurora.
+
+**NOTE**: when using Aurora with a language plugin - such as **scala** or **groovy**, you'll most probably need to add a **generatedCompile** item to your **dependencies** block, usually referencing the same compiler library as **compile** - in particular:
+
+  * *org.scala-lang:scala-library:YOUR_SCALA_VERSION* for Scala
+
+  * *localGroovy()* (or a specific Groovy version) for Groovy
 
 
 ## Usage
