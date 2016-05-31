@@ -26,6 +26,7 @@ import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
 import info.gianlucacosta.aurora.gradle.settings.JavaVersion
 import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.bundling.Jar
 
 
@@ -439,7 +440,15 @@ class DynamicService {
 
 
         if (project.hasBintray) {
-            project.bintrayUpload.dependsOn("assemble", "check", "assertRelease")
+            def bintrayDependencies = ["assemble", "check", "assertRelease"]
+
+            project.bintrayUpload.dependsOn(bintrayDependencies)
+
+            Task bintrayRecordingCopy = project.tasks.findByPath("_bintrayRecordingCopy")
+            if (bintrayRecordingCopy != null) {
+                Log.debug("_bintrayRecordingCopy found. Setting its dependencies as well")
+                bintrayRecordingCopy.dependsOn(bintrayDependencies)
+            }
         }
 
 
