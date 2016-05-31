@@ -55,8 +55,6 @@ class DynamicService {
 
         checkArtifactInfo()
 
-        setupSourceSets()
-
         setupAdditionalArtifacts()
 
         setupTodo()
@@ -183,23 +181,6 @@ class DynamicService {
 
         if (!project.version) {
             throw new AuroraException("The project version must NOT be empty")
-        }
-    }
-
-
-    private void setupSourceSets() {
-        Log.debug("Defining the source sets...")
-
-
-        project.sourceSets {
-            generated
-        }
-
-
-        project.dependencies {
-            compile project.sourceSets.generated.output
-
-            testCompile project.sourceSets.generated.output
         }
     }
 

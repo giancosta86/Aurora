@@ -50,6 +50,8 @@ class StaticService {
 
         setupRepositories()
 
+        setupSourceSets()
+
         createTasks()
     }
 
@@ -72,6 +74,25 @@ class StaticService {
             maven {
                 url "https://dl.bintray.com/giancosta86/Hephaestus"
             }
+        }
+    }
+
+
+    private void setupSourceSets() {
+        project.plugins.apply("java")
+
+        Log.debug("Defining the source sets...")
+
+
+        project.sourceSets {
+            generated
+        }
+
+
+        project.dependencies {
+            compile project.sourceSets.generated.output
+
+            testCompile project.sourceSets.generated.output
         }
     }
 
