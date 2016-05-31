@@ -30,7 +30,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
-        classpath 'info.gianlucacosta.aurora:aurora:4.4'
+        classpath 'info.gianlucacosta.aurora:aurora:5.0'
     }
 }
 
@@ -43,10 +43,40 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '5.0'
+version = '5.1'
 
 
 description = 'Elegant Gradle projects for the JVM'
+
+
+dependencies {
+    generatedCompile localGroovy()
+
+    compile localGroovy()
+
+    compile gradleApi()
+
+    compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
+    compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+    compile 'org.apache.xmlgraphics:batik-codec:1.8'
+    compile 'org.jclarion:image4j:0.7'
+
+    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
+}
+
+
+moonLicense {
+    license = apache2
+
+    productInfo {
+        productName = "Aurora"
+        inceptionYear = 2015
+        copyrightHolder = "Gianluca Costa"
+    }
+
+    excludes = ['/CheckJavaVersion.js$', '/CheckJavaVersion.sh$']
+}
 
 
 aurora {
@@ -64,32 +94,4 @@ aurora {
 
         labels = ['elegant', 'projects', 'Gradle', 'GitHub', 'Bintray']
     }
-}
-
-
-moonLicense {
-    license = apache2
-
-    productInfo {
-        productName = "Aurora"
-        inceptionYear = 2015
-        copyrightHolder = "Gianluca Costa"
-    }
-
-    excludes = ['/CheckJavaVersion.js$', '/CheckJavaVersion.sh$']
-}
-
-
-dependencies {
-    compile gradleApi()
-
-    compile localGroovy()
-
-    compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
-    compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
-    compile 'org.apache.xmlgraphics:batik-codec:1.8'
-    compile 'org.jclarion:image4j:0.7'
-
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
 }
