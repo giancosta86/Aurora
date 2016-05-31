@@ -29,7 +29,7 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
         classpath 'info.gianlucacosta.aurora:aurora:4.4'
     }
 }
@@ -50,8 +50,6 @@ description = 'Elegant Gradle projects for the JVM'
 
 
 aurora {
-    release = false
-
     gitHubUser = 'giancosta86'
 
     author {
@@ -78,7 +76,7 @@ moonLicense {
         copyrightHolder = "Gianluca Costa"
     }
 
-    excludes = ['/CheckJavaVersion.js$']
+    excludes = ['/CheckJavaVersion.js$', '/CheckJavaVersion.sh$']
 }
 
 
@@ -92,6 +90,6 @@ dependencies {
     compile 'org.apache.xmlgraphics:batik-codec:1.8'
     compile 'org.jclarion:image4j:0.7'
 
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
+    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
 }
