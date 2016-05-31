@@ -121,6 +121,16 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
   * For GUI applications (the default), use **javaw** in lieu of **java** on Windows
 
 
+* Starting from a **mainIcon.svg** file in the project directory, generate icon files:
+
+  * as **resources** to be used while the program runs
+
+  * in the **dist** directory, for the *application* plugin
+
+
+* Generate a **MainIcon** class to easily access the above icons
+
+
 * The **checkTodo** task provided by the *todo* plugin will fail if **project.isRelease** is *true* and there are active TODOs
 
 * Provide *info* and *debug* logging messages

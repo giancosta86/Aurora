@@ -31,6 +31,12 @@ import org.gradle.api.tasks.TaskAction
  */
 class GenerateMainIconsTask extends DefaultTask {
     @TaskAction
+    def run() {
+        generateIcons()
+        generateHelperClass()
+    }
+
+
     def generateIcons() {
         File svgSourceFile = project.file("mainIcon.svg")
 
@@ -50,5 +56,20 @@ class GenerateMainIconsTask extends DefaultTask {
 
             SvgToPngConverter.convert(svgSourceFile, outputFile, iconSize)
         }
+    }
+
+    private def generateHelperClass() {
+        String templateString = this.getClass().getResource("MainIcon.java.txt").text
+        String helperClassText = templateString.replace("@GROUP_ID@", project.groupId)
+
+        File helperClassPackageDirectory = project.file("src/generated/java/${project.groupId.replace('.', '/')}/icons")
+        Log.debug("Helper class package path: ${helperClassPackageDirectory.getAbsolutePath()}")
+
+        helperClassPackageDirectory.mkdirs()
+
+        File helperClassFile = new File(helperClassPackageDirectory, "MainIcon.java")
+        Log.debug("Helper class file: ${helperClassFile.getAbsolutePath()}")
+
+        helperClassFile.text = helperClassText
     }
 }
