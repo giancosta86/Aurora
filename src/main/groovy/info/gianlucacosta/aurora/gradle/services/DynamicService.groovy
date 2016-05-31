@@ -59,7 +59,7 @@ class DynamicService {
 
         setupTodo()
 
-        setupAdditionalApplicationFiles()
+        setupApplicationFiles()
 
         setupJavaVersionCheck()
 
@@ -228,9 +228,9 @@ class DynamicService {
     }
 
 
-    private void setupAdditionalApplicationFiles() {
+    private void setupApplicationFiles() {
         if (!project.hasApplication) {
-            Log.info("Skipping the setup of additional application files")
+            Log.info("Skipping the setup of application files")
             return
         }
 
@@ -240,6 +240,10 @@ class DynamicService {
                     from("src/generated/dist")
                 }
             }
+        }
+
+        project.run {
+            classpath += project.sourceSets.generated.output
         }
     }
 
