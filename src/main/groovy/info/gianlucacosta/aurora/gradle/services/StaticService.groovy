@@ -86,13 +86,16 @@ class StaticService {
 
         project.sourceSets {
             generated
-        }
 
+            main {
+                compileClasspath += project.sourceSets.generated.output
+                runtimeClasspath += project.sourceSets.generated.output
+            }
 
-        project.dependencies {
-            compile project.sourceSets.generated.output
-
-            testCompile project.sourceSets.generated.output
+            test {
+                compileClasspath += project.sourceSets.generated.output
+                runtimeClasspath += project.sourceSets.generated.output
+            }
         }
     }
 
@@ -110,6 +113,5 @@ class StaticService {
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
         project.tasks.create(name: "generateJavaVersionCheckScripts", type: GenerateJavaVersionCheckScriptsTask)
         project.tasks.create(name: "setupScaladoc", type: SetupScaladocTask)
-
     }
 }

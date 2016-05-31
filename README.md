@@ -53,7 +53,7 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 
 * Add a **generated** source set, located in the **src/generated** directory tree, for Aurora tasks and for other plugins that generate source files and resources. Such directory is automatically removed by the **cleanGenerated** task as well as by the **clean** task
 
-* The output of the **generated** source set is a **compile** and **testCompile** dependency for the project
+* The output of the **generated** source set is added to *compileClasspath* and *runtimeClasspath* of the default source sets (**main** and **test**)
 
 * Generate an **ArtifactInfo** class/object, providing information about the project. It will be located under **src/generated**:
 
