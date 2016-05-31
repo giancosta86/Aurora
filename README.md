@@ -121,11 +121,11 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
   * For GUI applications (the default), use **javaw** in lieu of **java** on Windows
 
 
-* The **checkTodo** task provided by the *todo* plugin will fail if the **project.isRelease** is *true* and there are active TODOs
+* The **checkTodo** task provided by the *todo* plugin will fail if **project.isRelease** is *true* and there are active TODOs
 
 * Provide *info* and *debug* logging messages
 
-* Setup tasks dependencies (see below)
+* Setup tasks dependencies (see the graph below)
 
 
 ## Tasks
@@ -152,20 +152,20 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
   * **Base URL**: *project's GitHub URL*/**releases/latest**
 
 
-* **generateMainIcons**: if **mainIcon.svg** exists in the project's root dir, this tasks creates, within **src/generated/${project.groupId}/icons** the following icons by converting the original SVG:
+* **generateMainIcons**: if **mainIcon.svg** exists in the project's root dir, this task creates, within **src/generated/resources/${project.groupId}/icons** the following icons by converting the original SVG:
 
-  * mainIcon16.png
+  * *mainIcon16.png*
 
-  * mainIcon32.png
+  * *mainIcon32.png*
 
-  * mainIcon64.png
+  * *mainIcon64.png*
 
-  * mainIcon128.png
+  * *mainIcon128.png*
 
-  * mainIcon512.png
+  * *mainIcon512.png*
 
 
-* **generateDistIcons**: if **mainIcon.svg** exists in the project's root dir, this tasks creates, within **src/generated/dist**, 2 icons, compatible with the above **generateAppDescriptor** task. More precisely:
+* **generateDistIcons**: if **mainIcon.svg** exists in the project's root dir, this task creates, within **src/generated/dist**, 2 icons, compatible with the above **generateAppDescriptor** task. More precisely:
 
     * *mainIcon.png*
 
@@ -175,10 +175,10 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 **generatePom**: creates a Maven POM under **build/mavenTemp**
 
 
-**generateJavaVersionCheckScripts**: scripts for ensuring the required Java version (if declared in the project settings) is installed when running the application artifact
+**generateJavaVersionCheckScripts**: creates scripts for ensuring the required Java version (if declared in the project settings) is installed when running the application artifact
 
 
-**setupScaladoc**: configures the **build** dir in order to prevent a few warnings issued by Scaladoc
+**setupScaladoc**: provides configuration in order to prevent a few warnings issued by Scaladoc
 
 
 ## Task dependencies
