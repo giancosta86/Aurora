@@ -108,6 +108,11 @@ class GenerateArtifactInfoTask extends DefaultTask {
         )
 
                 .replace(
+                "@COPYRIGHT_HOLDER@",
+                StringEscapeUtils.escapeJava(project.moonLicense.productInfo.copyrightHolder)
+        )
+
+                .replace(
                 "@LICENSE@",
                 StringEscapeUtils.escapeJava(project.moonLicense.license.name)
         )

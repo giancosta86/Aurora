@@ -9,6 +9,8 @@ object ArtifactInfo {
 
     val copyrightYears = "@COPYRIGHT_YEARS@"
 
+    val copyrightHolder = "@COPYRIGHT_HOLDER@"
+
     val license = "@LICENSE@"
 
     val website = "@WEBSITE@"
