@@ -406,7 +406,11 @@ class DynamicService {
     private void setupTaskDependencies() {
         project.clean.dependsOn("cleanGenerated")
 
+        project.compileGeneratedJava.dependsOn("generateMainIcons")
+        project.compileGeneratedJava.dependsOn("generateArtifactInfo")
+
         project.processGeneratedResources.dependsOn("generateMainIcons")
+        project.processGeneratedResources.dependsOn("generateArtifactInfo")
 
 
         if (project.hasMoonLicense) {
@@ -416,6 +420,7 @@ class DynamicService {
             project.checkGit.dependsOn("setNotices")
 
             project.setNotices.dependsOn("generateArtifactInfo")
+            project.setNotices.dependsOn("generateMainIcons")
         }
 
 
