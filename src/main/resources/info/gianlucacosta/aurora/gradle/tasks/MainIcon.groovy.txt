@@ -1,0 +1,24 @@
+package @GROUP_ID@.icons;
+
+import java.io.InputStream;
+import java.net.URL;
+
+
+public class MainIcon {
+    public static InputStream get(int size) {
+        return MainIcon.class.getResourceAsStream(getMainIconName(size));
+    }
+
+
+    public static URL getUrl(int size) {
+        return MainIcon.class.getResource(getMainIconName(size));
+    }
+
+
+    private static String getMainIconName(int size) {
+        return String.format("mainIcon%d.png", size);
+    }
+
+
+    private MainIcon(){}
+}

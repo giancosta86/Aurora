@@ -59,7 +59,7 @@ class GenerateMainIconsTask extends DefaultTask {
     }
 
     private def generateHelperClass() {
-        String templateString = this.getClass().getResource("MainIcon.java.txt").text
+        String templateString = this.getClass().getResource("MainIcon.${project.mainLanguage}.txt").text
         String helperClassText = templateString.replace("@GROUP_ID@", project.groupId)
 
         File helperClassPackageDirectory = project.file("src/generated/${project.mainLanguage}/${project.groupId.replace('.', '/')}/icons")
@@ -67,7 +67,7 @@ class GenerateMainIconsTask extends DefaultTask {
 
         helperClassPackageDirectory.mkdirs()
 
-        File helperClassFile = new File(helperClassPackageDirectory, "MainIcon.java")
+        File helperClassFile = new File(helperClassPackageDirectory, "MainIcon.${project.mainLanguage}")
         Log.debug("Helper class file: ${helperClassFile.getAbsolutePath()}")
 
         helperClassFile.text = helperClassText
