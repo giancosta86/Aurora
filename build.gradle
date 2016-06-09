@@ -29,8 +29,8 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
-        classpath 'info.gianlucacosta.aurora:aurora:5.6'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
+        classpath 'info.gianlucacosta.aurora:aurora:6.0'
     }
 }
 
@@ -43,7 +43,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '6.0'
+version = '6.1'
 
 
 description = 'Elegant Gradle projects for the JVM'

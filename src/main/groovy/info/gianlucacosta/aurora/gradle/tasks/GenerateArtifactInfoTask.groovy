@@ -94,7 +94,7 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
                 .replace(
                 "@NAME@",
-                StringEscapeUtils.escapeJava(project.name)
+                StringEscapeUtils.escapeJava(project.moonLicense.productInfo.productName)
         )
 
                 .replace(
