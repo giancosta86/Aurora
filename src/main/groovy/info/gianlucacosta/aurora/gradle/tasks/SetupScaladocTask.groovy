@@ -29,8 +29,13 @@ import org.gradle.api.tasks.TaskAction
 class SetupScaladocTask extends DefaultTask {
     @TaskAction
     def setupScaladoc() {
-        File requestedDir = new File(project.buildDir, "resources/main")
-
-        requestedDir.mkdirs()
+        [
+                "resources/main",
+                "resources/generated",
+                "resources/test"
+        ].each { requestedDirName ->
+            File requestedDir = new File(project.buildDir, requestedDirName)
+            requestedDir.mkdirs()
+        }
     }
 }
