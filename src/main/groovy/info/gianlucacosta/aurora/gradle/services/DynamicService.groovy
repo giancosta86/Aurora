@@ -435,7 +435,9 @@ class DynamicService {
         }
 
 
-        project.check.dependsOn("checkGit")
+        if (project.isRelease) {
+            project.check.dependsOn("checkGit")
+        }
 
 
         if (project.hasTodo) {
@@ -457,12 +459,10 @@ class DynamicService {
 
 
         if (project.hasApplication) {
-            project.distZip.dependsOn("assertRelease")
             project.distZip.dependsOn("check")
             project.distZip.dependsOn("generateDistIcons")
             project.distZip.dependsOn("generateJavaVersionCheckScripts")
 
-            project.distTar.dependsOn("assertRelease")
             project.distTar.dependsOn("check")
             project.distTar.dependsOn("generateDistIcons")
             project.distTar.dependsOn("generateJavaVersionCheckScripts")

@@ -147,7 +147,7 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 * **assertRelease**: fails if the **project.isRelease** flag has been set to *false* (i.e., if **project.version** ends with *-SNAPSHOT*)
 
 
-* **checkGit**: ensures that the project's directory status is *clean* according to Git
+* **checkGit**: ensures that the project's directory status is *clean* according to Git. It is set as a dependency of **check** *if project.isRelease is true*
 
 
 * **generateArtifactInfo**: generates, under **src/generated**, an artifact source file exposing the project information
