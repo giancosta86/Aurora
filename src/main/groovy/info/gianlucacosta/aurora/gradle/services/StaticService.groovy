@@ -22,6 +22,7 @@ package info.gianlucacosta.aurora.gradle.services
 
 import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
 import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
+import info.gianlucacosta.aurora.gradle.tasks.CheckDependenciesTask
 import info.gianlucacosta.aurora.gradle.tasks.CleanGeneratedTask
 import info.gianlucacosta.aurora.gradle.tasks.SetupScaladocTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
@@ -106,6 +107,7 @@ class StaticService {
         project.tasks.create(name: "cleanGenerated", type: CleanGeneratedTask)
         project.tasks.create(name: 'assertRelease', type: AssertReleaseTask)
         project.tasks.create(name: "checkGit", type: CheckGitTask)
+        project.tasks.create(name: "checkDependencies", type: CheckDependenciesTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
         project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
