@@ -30,7 +30,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
-        classpath 'info.gianlucacosta.aurora:aurora:6.1'
+        classpath 'info.gianlucacosta.aurora:aurora:7.0'
     }
 }
 
@@ -43,7 +43,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '7.0'
+version = '7.1'
 
 
 description = 'Elegant Gradle projects for the JVM'
@@ -60,6 +60,9 @@ dependencies {
     compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
     compile 'org.apache.xmlgraphics:batik-codec:1.8'
     compile 'org.jclarion:image4j:0.7'
+
+
+    testCompile 'junit:junit:4.12'
 
     testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
     testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'

@@ -2,10 +2,10 @@ var shell = WScript.CreateObject("WScript.Shell")
 
 var arguments = WScript.Arguments
 
-var requiredMajor = arguments(0)
-var requiredMinor = arguments(1)
-var requiredBuild = arguments(2)
-var requiredUpdate = arguments(3)
+var requiredMajor = parseInt(arguments(0))
+var requiredMinor = parseInt(arguments(1))
+var requiredBuild = parseInt(arguments(2))
+var requiredUpdate = parseInt(arguments(3))
 
 
 WScript.Echo("---=== REQUIRED JAVA VERSION ===---")
@@ -93,14 +93,14 @@ if (versionMatch == null) {
 }
 
 
-var majorVersion = versionMatch[1]
-var minorVersion = versionMatch[2]
-var buildVersion = versionMatch[3]
+var majorVersion = parseInt(versionMatch[1])
+var minorVersion = parseInt(versionMatch[2])
+var buildVersion = parseInt(versionMatch[3])
 if (!buildVersion) {
   buildVersion = 0
 }
 
-var updateVersion = versionMatch[4]
+var updateVersion = parseInt(versionMatch[4])
 if (!updateVersion) {
   updateVersion = 0
 }
