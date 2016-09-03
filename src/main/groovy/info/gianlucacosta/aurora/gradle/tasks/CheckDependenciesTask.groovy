@@ -30,7 +30,7 @@ class CheckDependenciesTask extends DefaultTask {
         project.configurations.asList().each { configuration ->
             configuration.getAllDependencies().each { dependency ->
                 if (dependency.hasProperty("version")) {
-                    if (dependency.version.endsWith("-SNAPSHOT")) {
+                    if (dependency.version != null && dependency.version.endsWith("-SNAPSHOT")) {
                         throw new AuroraException("You should not depend on a SNAPSHOT library: '${dependency.group}:${dependency.name}:${dependency.version}'")
                     }
                 }
