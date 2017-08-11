@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015-2016 Gianluca Costa
+  Copyright (C) 2015-2017 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import info.gianlucacosta.aurora.gradle.tasks.SetupScaladocTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
 import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateJavaVersionCheckScriptsTask
+import info.gianlucacosta.aurora.gradle.tasks.GenerateCustomStartupScripts
 import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
 import info.gianlucacosta.aurora.gradle.tasks.GeneratePomTask
 import info.gianlucacosta.aurora.utils.Log
@@ -113,7 +113,7 @@ class StaticService {
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
-        project.tasks.create(name: "generateJavaVersionCheckScripts", type: GenerateJavaVersionCheckScriptsTask)
+        project.tasks.create(name: "generateCustomStartupScripts", type: GenerateCustomStartupScripts)
         project.tasks.create(name: "setupScaladoc", type: SetupScaladocTask)
     }
 }

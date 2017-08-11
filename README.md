@@ -116,7 +116,7 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 
   * Include files under **src/generated/dist**
 
-  * Include scripts for ensuring the required Java version (if declared in the project settings) is installed: if the user does not have at least such version, the Java download page is opened in a browser
+  * Include scripts for ensuring the required Java version is installed and run: if the user does not have at least such version, the Java download page is opened in a browser
 
   * For GUI applications (the default), use **javaw** in lieu of **java** on Windows
 
@@ -188,7 +188,7 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 **generatePom**: creates a Maven POM under **build/mavenTemp**
 
 
-**generateJavaVersionCheckScripts**: creates scripts for ensuring the required Java version (if declared in the project settings) is installed when running the application artifact
+**generateCustomStartupScripts**: creates custom startup scripts for running the app using a suitable Java version
 
 
 **setupScaladoc**: provides configuration in order to prevent a few warnings issued by Scaladoc
@@ -255,6 +255,8 @@ aurora {
         url = "<Author's url - OPTIONAL>"
     }
 
+    customStartupScripts = true //OPTIONAL. Default: true
+
     bintray {
         user = "<Bintray API user id - OPTIONAL>"
         key = "<Bintray API key - OPTIONAL>"
@@ -266,11 +268,24 @@ aurora {
         labels = ["testLabel1", "testLabel2"] //Tags following Bintray's conventions
     }
 
-    javaVersion {  //This makes Java 1.8.0_65 or later required to run the application. OPTIONAL
+    /*
+    This example makes Java 1.8.0_65 or later required to run the application.
+     OPTIONAL - if missing, Aurora will inject the version of the JVM building the app
+    */
+    javaVersion {
       major = 1  //Default: 0
       minor = 8 //Default: 0
       build = 0 //Default: 0
       update = 65 //Default: 0
+    }
+
+    /*
+    Execution arguments for both the JVM and the app. OPTIONAL (it defaults to empty lists)
+    */
+    runArgs {
+      jvm = ["-ea"] //Arguments for the JVM. OPTIONAL (defaults to an empty list)
+
+      app = ["Alpha", "Beta"] //Arguments for the app. OPTIONAL (defaults to an empty list)
     }
 }
 '''
@@ -312,7 +327,12 @@ aurora {
 
   * **labels**: the label tags to be shown on Bintray
 
-**javaVersion**: if declared, will generate code - for the **application** plugin distribution - checking that the required Java version (or later) is installed.
+
+**customStartupScripts**: creates Aurora-specific startup scripts in lieu of the default ones provided by Gradle's *application* plugin. OPTIONAL - the default is *true*
+
+**javaVersion**: used by the *custom startup scripts* to check that the required Java version (or later) is installed. If missing, the current JVM version will be chosen
+
+**runArgs**: JVM- and app-related arguments. Please refer to the example configuration above for more details
 
 
 ## Example projects

@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015-2016 Gianluca Costa
+  Copyright (C) 2015-2017 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -38,6 +38,10 @@ class AuroraSettings {
     boolean commandLineApp = false
 
     JavaVersion requiredJavaVersion
+
+    RunArguments runArguments
+
+    boolean customStartupScripts = true
 
 
     def author(Closure closure) {
@@ -102,5 +106,19 @@ class AuroraSettings {
         Log.debug("Required Java version: ${requiredJavaVersion.dump()}")
 
         this.requiredJavaVersion = requiredJavaVersion
+    }
+
+
+    def runArgs(Closure closure) {
+        RunArguments runArguments = new RunArguments()
+
+        closure.delegate = runArguments
+        closure.resolveStrategy = Closure.DELEGATE_FIRST
+
+        closure()
+
+        Log.debug("Run arguments: ${runArguments.dump()}")
+
+        this.runArguments = runArguments
     }
 }

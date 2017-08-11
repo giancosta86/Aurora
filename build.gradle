@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015-2016 Gianluca Costa
+  Copyright (C) 2015-2017 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
-        classpath 'info.gianlucacosta.aurora:aurora:6.1'
+        classpath 'info.gianlucacosta.aurora:aurora:8.0'
     }
 }
 
@@ -43,7 +43,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '8.0'
+version = '9.0'
 
 
 description = 'Elegant Gradle projects for the JVM'
@@ -56,16 +56,16 @@ dependencies {
 
     compile gradleApi()
 
-    compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
-    compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
-    compile 'org.apache.xmlgraphics:batik-codec:1.8'
+    compile 'org.apache.xmlgraphics:batik-transcoder:1.9.1'
+    compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.2'
+    compile 'org.apache.xmlgraphics:batik-codec:1.9.1'
     compile 'org.jclarion:image4j:0.7'
 
 
     testCompile 'junit:junit:4.12'
 
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.1'
+    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
 }
 
 
@@ -78,7 +78,7 @@ moonLicense {
         copyrightHolder = "Gianluca Costa"
     }
 
-    excludes = ['/CheckJavaVersion.js$', '/CheckJavaVersion.sh$']
+    excludes = ['/RunJava.js$', '/RunJava.py$']
 }
 
 

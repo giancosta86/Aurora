@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015-2016 Gianluca Costa
+  Copyright (C) 2015-2017 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import groovy.json.StringEscapeUtils
 import info.gianlucacosta.aurora.gradle.AuroraException
 import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -32,6 +33,13 @@ import org.gradle.api.tasks.TaskAction
 class GenerateArtifactInfoTask extends DefaultTask {
     @TaskAction
     def generateAppInfo() {
+        if (!project.hasMoonLicense) {
+            Log.info("Cannot generate artifact info, as MoonLicense is missing")
+
+            throw new StopExecutionException()
+        }
+
+
         String languageDirectoryName = project.mainLanguage
         Log.debug("Language directory name: ${languageDirectoryName}")
 

@@ -2,7 +2,7 @@
   ===========================================================================
   Aurora
   ===========================================================================
-  Copyright (C) 2015-2016 Gianluca Costa
+  Copyright (C) 2015-2017 Gianluca Costa
   ===========================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -24,16 +24,22 @@ import info.gianlucacosta.aurora.gradle.AuroraException
 import info.gianlucacosta.aurora.gradle.AuroraPlugin
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
 import info.gianlucacosta.aurora.gradle.settings.JavaVersion
+import info.gianlucacosta.aurora.gradle.settings.RunArguments
 import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.bundling.Jar
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 /**
  * Invoked as soon as the "aurora {}" block closes in the build script
  */
 class DynamicService {
+    private static final Pattern javaVersionPattern = Pattern.compile("(\\d+)\\.(\\d+)(?:\\.(\\d+)(?:_(\\d+))?)?(?:-.+)?")
+
     private final Project project
     private final AuroraSettings auroraSettings
 
@@ -60,10 +66,6 @@ class DynamicService {
         setupTodo()
 
         setupApplicationFiles()
-
-        setupJavaVersionCheck()
-
-        setupJavaw()
 
         setupBintray()
 
@@ -118,6 +120,41 @@ class DynamicService {
 
         if (project.hasBintray && !auroraSettings.bintraySettings) {
             throw new AuroraException("Missing bintray block")
+        }
+
+        if (project.hasApplication && auroraSettings.customStartupScripts) {
+            if (auroraSettings.requiredJavaVersion == null) {
+                auroraSettings.requiredJavaVersion = getCurrentJavaVersion()
+
+                if (auroraSettings.requiredJavaVersion == null) {
+                    throw new AuroraException("The required Java version is missing and could not be detected from the current JVM")
+                } else {
+                    Log.info("Inferred Java version: ${auroraSettings.requiredJavaVersion.dump()}")
+                }
+            }
+
+
+            if (auroraSettings.runArguments == null) {
+                auroraSettings.runArguments = new RunArguments()
+            }
+        }
+    }
+
+
+    private JavaVersion getCurrentJavaVersion() {
+        String javaVersionProperty = System.getProperty("java.version")
+
+        Matcher javaVersionMatcher = javaVersionPattern.matcher(javaVersionProperty)
+
+        if (javaVersionMatcher.matches()) {
+            return new JavaVersion(
+                    major: javaVersionMatcher.group(1).toInteger(),
+                    minor: javaVersionMatcher.group(2).toInteger(),
+                    build: javaVersionMatcher.group(3).toInteger(),
+                    update: javaVersionMatcher.group(4).toInteger()
+            )
+        } else {
+            return null
         }
     }
 
@@ -256,58 +293,6 @@ class DynamicService {
         }
     }
 
-
-    private void setupJavaVersionCheck() {
-        if (!project.hasApplication || auroraSettings.requiredJavaVersion == null) {
-            Log.info("Skipping Java version check configuration")
-            return
-        }
-
-        JavaVersion javaVersion = auroraSettings.requiredJavaVersion
-
-        project.startScripts {
-            windowsStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            'cscript //NoLogo "%~dp0CheckJavaVersion.js" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                                    + 'if %errorlevel% neq 0 exit /b %errorlevel%\n\n'
-                                    + windowsStartScriptGenerator.template.asString()
-                    )
-
-
-            unixStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            '#!/usr/bin/env bash\n'
-                                    + 'if ! "\\$(dirname "\\$0")/CheckJavaVersion.sh" ' + "${javaVersion.major} ${javaVersion.minor} ${javaVersion.build} ${javaVersion.update}\n"
-                                    + 'then\n'
-                                    + '\texit 1\n'
-                                    + 'fi\n\n'
-                                    + unixStartScriptGenerator.template.asString()
-                    )
-        }
-    }
-
-
-    private void setupJavaw() {
-        if (!project.hasApplication || auroraSettings.commandLineApp) {
-            Log.info("Skipping Javaw setup")
-            return
-        }
-
-        project.startScripts {
-            windowsStartScriptGenerator.template =
-                    project.resources.text.fromString(
-                            windowsStartScriptGenerator.template.asString()
-                                    .replace(
-                                    "java.exe",
-                                    "javaw.exe"
-                            )
-                                    .replace(
-                                    "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%",
-                                    "start \"\" /B \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%"
-                            )
-                    )
-        }
-    }
 
 
     private void setupBintray() {
@@ -462,11 +447,11 @@ class DynamicService {
         if (project.hasApplication) {
             project.distZip.dependsOn("check")
             project.distZip.dependsOn("generateDistIcons")
-            project.distZip.dependsOn("generateJavaVersionCheckScripts")
+            project.distZip.dependsOn("generateCustomStartupScripts")
 
             project.distTar.dependsOn("check")
             project.distTar.dependsOn("generateDistIcons")
-            project.distTar.dependsOn("generateJavaVersionCheckScripts")
+            project.distTar.dependsOn("generateCustomStartupScripts")
 
             project.generateAppDescriptor.dependsOn("distZip")
 
