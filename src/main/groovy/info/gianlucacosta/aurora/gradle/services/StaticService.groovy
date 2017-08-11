@@ -20,17 +20,7 @@
 
 package info.gianlucacosta.aurora.gradle.services
 
-import info.gianlucacosta.aurora.gradle.tasks.AssertReleaseTask
-import info.gianlucacosta.aurora.gradle.tasks.CheckGitTask
-import info.gianlucacosta.aurora.gradle.tasks.CheckDependenciesTask
-import info.gianlucacosta.aurora.gradle.tasks.CleanGeneratedTask
-import info.gianlucacosta.aurora.gradle.tasks.SetupScaladocTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateAppDescriptorTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateArtifactInfoTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateDistIconsTask
-import info.gianlucacosta.aurora.gradle.tasks.GenerateCustomStartupScripts
-import info.gianlucacosta.aurora.gradle.tasks.GenerateMainIconsTask
-import info.gianlucacosta.aurora.gradle.tasks.GeneratePomTask
+import info.gianlucacosta.aurora.gradle.tasks.*
 import info.gianlucacosta.aurora.utils.Log
 import org.gradle.api.Project
 

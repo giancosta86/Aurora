@@ -28,12 +28,12 @@ import java.awt.image.BufferedImage
 
 public class PngToIcoConverter {
     public static void convert(File inputFile, File outputFile) {
-        inputFile.withInputStream {inputStream ->
+        inputFile.withInputStream { inputStream ->
             Image inputImage = new Image(inputStream)
             BufferedImage bufferedInputImage = SwingFXUtils.fromFXImage(inputImage, null)
             ICOEncoder.write(bufferedInputImage, outputFile)
         }
     }
 
-    private PngToIcoConverter(){}
+    private PngToIcoConverter() {}
 }

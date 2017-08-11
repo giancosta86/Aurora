@@ -40,5 +40,5 @@ class SvgToPngConverter {
         }
     }
 
-    private SvgToPngConverter(){}
+    private SvgToPngConverter() {}
 }

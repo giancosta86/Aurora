@@ -21,7 +21,6 @@
 package info.gianlucacosta.aurora.gradle
 
 import info.gianlucacosta.aurora.gradle.services.DynamicService
-
 import info.gianlucacosta.aurora.gradle.services.StaticService
 import info.gianlucacosta.aurora.gradle.settings.AuroraSettings
 import info.gianlucacosta.aurora.utils.Log

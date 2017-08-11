@@ -49,7 +49,7 @@ class GenerateMainIconsTask extends DefaultTask {
 
         Log.debug("Source SVG icon file: ${svgSourceFile.getAbsolutePath()}")
 
-        [16, 32, 64, 128, 512].forEach {iconSize ->
+        [16, 32, 64, 128, 512].forEach { iconSize ->
             File outputFile = new File(iconResourcesDir, "mainIcon${iconSize}.png")
 
             Log.debug("Target PNG icon file: ${outputFile.getAbsolutePath()}")
