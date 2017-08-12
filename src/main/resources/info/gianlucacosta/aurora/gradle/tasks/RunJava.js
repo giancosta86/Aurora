@@ -169,6 +169,14 @@ function searchEnvironmentJavaHome(requiredJavaVersion) {
 		if (environmentJavaHome != "%JAVA_HOME%")  {
 			WScript.Echo("JAVA_HOME found: " + environmentJavaHome)
 
+			var javaExeFilePath = getJavaExeFilePath(environmentJavaHome)
+
+			if (!fileSystemObject.FileExists(javaExeFilePath)) {
+				WScript.Echo("This JAVA_HOME does not actually contain a Java interpreter!")
+				return null
+			}
+
+
 			var environmentJavaHomeMatch = standardJavaDirRegex.exec(environmentJavaHome)
 
 			var environmentJavaHomeVersion = null
@@ -231,6 +239,17 @@ function searchEnvironmentJavaHome(requiredJavaVersion) {
 }
 
 
+
+function getJavaExeFilePath(javaHome) {
+	return javaHome + "/bin/java.exe"
+}
+
+
+function getJavawExeFilePath(javaHome) {
+	return javaHome + "/bin/javaw.exe"
+}
+
+
 function search64BitProgramFilesDirectory(requiredJavaVersion) {
 	WScript.Echo("Now scanning for 64-bit Java in '" + programFiles64BitPath + "'...")
 
@@ -266,9 +285,17 @@ function scanForTheLatestJavaDirectory(rootDirectoryPath, requiredJavaVersion) {
 						compareVersions(currentVersion, highestJavaInfo.version) > 0
 					)
 				) {			
-					highestJavaInfo = {
-						home: currentRelativePath,
-						version: currentVersion
+					var currentAbsolutePath = fileSystemObject.GetFolder(rootDirectory + "/" + currentRelativePath).path
+					var javaExeFilePath = getJavaExeFilePath(currentAbsolutePath)
+
+					if (fileSystemObject.FileExists(javaExeFilePath)) {
+						highestJavaInfo = {
+							home: currentAbsolutePath,
+							version: currentVersion
+						}
+					} else {
+						WScript.Echo("(Skipping this directory, as it does not contain a Java interpreter)")
+						WScript.Echo()
 					}
 				}
 			}
@@ -279,9 +306,7 @@ function scanForTheLatestJavaDirectory(rootDirectoryPath, requiredJavaVersion) {
 		if (
 			highestJavaInfo && 
 			(compareVersions(highestJavaInfo.version, requiredJavaVersion) >= 0)
-		) {				
-			highestJavaInfo.home = fileSystemObject.GetFolder(rootDirectory + "/" + highestJavaInfo.home).path
-
+		) {
 			return highestJavaInfo
 		} else {
 			WScript.Echo("No updated Java version found!")
@@ -295,16 +320,16 @@ function scanForTheLatestJavaDirectory(rootDirectoryPath, requiredJavaVersion) {
 
 
 
-function getJavaCommandLine(javaHomePath, useJavaw, arguments) {	
-	var javaExeSubPath = 
+function getJavaCommandLine(javaHome, useJavaw, arguments) {
+	var interpreterFilePath =
 		useJavaw ?
-			"/bin/javaw.exe"
+			getJavawExeFilePath(javaHome)
 			: 
-			"/bin/java.exe"
+			getJavaExeFilePath(javaHome)
 
 	var argumentsString = arguments.join(" ")
 
-	return '"' + javaHomePath + javaExeSubPath + '"' + " " + argumentsString
+	return '"' + interpreterFilePath + '"' + " " + argumentsString
 }
 
 
