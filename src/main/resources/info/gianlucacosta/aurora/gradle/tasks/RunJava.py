@@ -95,8 +95,21 @@ def main():
 		sys.exit(1)
 
 
+
 def getJavaInfo(requiredJavaVersion):
-	return searchEnvironmentJavaHome(requiredJavaVersion)
+	environmentJavaHomeInfo = searchEnvironmentJavaHome(requiredJavaVersion)
+	if environmentJavaHomeInfo is not None:
+		return environmentJavaHomeInfo
+
+	print("")
+	print("")
+
+	systemPathJavaHomeInfo = searchSystemPathJavaHome(requiredJavaVersion)
+	if systemPathJavaHomeInfo is not None:
+		return systemPathJavaHomeInfo
+
+	return None
+
 
 
 def searchEnvironmentJavaHome(requiredJavaVersion):
@@ -119,29 +132,8 @@ def searchEnvironmentJavaHome(requiredJavaVersion):
 					print("It is not a standard Java directory name - now asking Java itself")
 					print("")
 
-					javaCommandLine = getJavaCommandLine(
-						environmentJavaHome, 					
-						["-version"]
-					)
+					environmentJavaHomeVersion = runJavaToGetVersion(environmentJavaHome)
 
-					print("Running Java command to get version info:")
-					print("---> {}".format(javaCommandLine))
-
-					
-					javaProcess = subprocess.Popen(javaCommandLine, shell=True, stderr=subprocess.PIPE)
-					
-					javaVersionLine = javaProcess.stderr.readline()
-					
-					print("Detected Java version line --> {}".format(javaVersionLine))
-
-					javaVersionOutputMatch = javaVersionOutputPattern.search(javaVersionLine)
-
-					if javaVersionOutputMatch:
-						environmentJavaHomeVersion = buildVersion(javaVersionOutputMatch.group(1, 2, 3, 4))
-						print("Detected Java version--> {}".format(environmentJavaHomeVersion))
-					else:
-						print("Cannot detect the Java version via its output line")						
-					
 
 				if environmentJavaHomeVersion:
 					print("JAVA_HOME version found: {}".format(environmentJavaHomeVersion))
@@ -163,6 +155,63 @@ def searchEnvironmentJavaHome(requiredJavaVersion):
 
 
 
+def runJavaToGetVersion(javaHome):
+	javaCommandLine = getJavaCommandLine(
+		javaHome,
+		["-version"]
+	)
+
+	print("Running Java command to get version info:")
+	print("---> {}".format(javaCommandLine))
+
+	javaProcess = subprocess.Popen(javaCommandLine, shell=True, stderr=subprocess.PIPE)
+
+	javaVersionLine = javaProcess.stderr.readline()
+
+	print("Detected Java version line --> {}".format(javaVersionLine))
+
+	javaVersionOutputMatch = javaVersionOutputPattern.search(javaVersionLine)
+
+	if javaVersionOutputMatch:
+		print("Detected Java version--> {}".format(javaVersionOutputMatch.group(0)))
+		return buildVersion(javaVersionOutputMatch.group(1, 2, 3, 4))
+	else:
+		print("Cannot detect the Java version via its output line")
+		return None
+
+
+
+def searchSystemPathJavaHome(requiredJavaVersion):
+	print("Now searching the system PATH environment variable...")
+	print("")
+
+	try:
+		javaPath = subprocess.check_output(["which", "java"]).strip()
+
+		if javaPath:
+			javaHome = os.path.dirname(
+				os.path.dirname(
+					javaPath
+				)
+			)
+
+			print("Java found in PATH! --> {}".format(javaHome))
+
+			javaPathVersion = runJavaToGetVersion(javaHome)
+
+			if javaPathVersion:
+				return {
+					"home": javaHome,
+					"version": javaPathVersion
+				}
+		else:
+			print("Java is not in the system PATH")
+
+
+	except subprocess.CalledProcessError:
+		print("Java is not in the system PATH")
+
+
 
 def getJavaCommandLine(javaHomePath, arguments):
 	javaExeSubPath =  "/bin/java"
@@ -180,13 +229,16 @@ def showWarning(prompt):
 		subprocess.call(
 			'zenity --warning --text="{}"'.format(prompt),
 			shell=True,
+			stdout=subprocess.PIPE,
 			stderr=subprocess.PIPE
 		)
 	except:
 		try:
 			subprocess.call(
-			'osascript -e "tell app "System Events" to display dialog "{}" buttons "OK" default button 1 with title "Warning" with icon caution"'.format(prompt),
-			shell=True
+			r'osascript -e "tell app \"System Events\" to display dialog \"{}\" buttons \"OK\" default button 1 with title \"Warning\" with icon caution"'.format(prompt),
+			shell=True,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE
 		)
 		except:
 			pass
