@@ -72,7 +72,7 @@ class GenerateCustomStartupScripts extends DefaultTask {
 
                                     "${project.mainClassName} ${auroraSettings.isCommandLineApp() ? 0 : 1} " +
 
-                                    "${runArguments.jvm.join(" ")} +++ ${runArguments.app.join(" ")}\n"
+                                    "${runArguments.jvm.join(" ")} +++ ${runArguments.app.join(" ")} %*\n"
                     )
 
 
@@ -85,7 +85,7 @@ class GenerateCustomStartupScripts extends DefaultTask {
 
                                     "${project.mainClassName} " +
 
-                                    "${runArguments.jvm.join(" ")} +++ ${runArguments.app.join(" ")}\n"
+                                    "${runArguments.jvm.join(" ")} +++ ${runArguments.app.join(" ")}" + '"\\$@"\n'
                     )
         }
     }
