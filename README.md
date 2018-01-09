@@ -206,7 +206,7 @@ Aurora introduces tasks and task dependencies - however, only if the necessary p
 
 At the very beginning of your build script, add:
 
-'''groovy
+```groovy
 buildscript {
     repositories {
         jcenter()
@@ -220,13 +220,13 @@ buildscript {
         classpath 'info.gianlucacosta.aurora:aurora:CHOOSE_VERSION'
     }
 }
-'''
+```
 
 To apply the plugin:
 
-'''groovy
+```groovy
 apply plugin: 'info.gianlucacosta.aurora'
-'''
+```
 
 Aurora can be applied before or after other plugins, *but* its **aurora{...}** DSL block must occur after every *apply* introducing a plugin referenced by Aurora.
 
@@ -241,7 +241,7 @@ Aurora can be applied before or after other plugins, *but* its **aurora{...}** D
 
 Aurora will perform most of its configuration (excluding mainly repository and task declarations) when reaching its (mandatory) DSL block:
 
-'''groovy
+```groovy
 aurora {
     gitHubUser  = "<GitHub user id>"
 
@@ -256,6 +256,8 @@ aurora {
     }
 
     customStartupScripts = true //OPTIONAL. Default: true
+    
+    commandLineApp = false //OPTIONAL. Default: false
 
     bintray {
         user = "<Bintray API user id - OPTIONAL>"
@@ -288,7 +290,7 @@ aurora {
       app = ["Alpha", "Beta"] //Arguments for the app. OPTIONAL (defaults to an empty list)
     }
 }
-'''
+```
 
 ### Settings
 
