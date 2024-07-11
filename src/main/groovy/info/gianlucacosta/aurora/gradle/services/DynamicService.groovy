@@ -13,22 +13,20 @@ import org.gradle.api.tasks.bundling.Jar
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 /**
  * Invoked as soon as the "aurora {}" block closes in the build script
  */
 class DynamicService {
-    private static final Pattern javaVersionPattern = Pattern.compile("(\\d+)\\.(\\d+)(?:\\.(\\d+)(?:_(\\d+))?)?(?:-.+)?")
+
+    private static final Pattern javaVersionPattern = Pattern.compile('(\\d+)\\.(\\d+)(?:\\.(\\d+)(?:_(\\d+))?)?(?:-.+)?')
 
     private final Project project
     private final AuroraSettings auroraSettings
-
 
     DynamicService(Project project) {
         this.project = project
         this.auroraSettings = project.auroraSettings
     }
-
 
     def run() {
         initHasFlags()
@@ -39,6 +37,8 @@ class DynamicService {
 
         setupProjectProperties()
 
+        setupJavaFx()
+
         checkArtifactInfo()
 
         setupArtifacts()
@@ -47,59 +47,54 @@ class DynamicService {
 
         setupApplicationFiles()
 
-        setupBintray()
+        setupMavenDeploy()
 
         setupTaskDependencies()
     }
 
-
     private void initHasFlags() {
         project.ext {
-            hasJava = project.getPluginManager().hasPlugin("java")
+            hasJava = project.getPluginManager().hasPlugin('java')
 
-            hasScala = project.getPluginManager().hasPlugin("scala")
+            hasJavaFx = project.getPluginManager().hasPlugin('org.openjfx.javafxplugin')
 
-            hasGroovy = project.getPluginManager().hasPlugin("groovy")
+            hasScala = project.getPluginManager().hasPlugin('scala')
 
-            hasApplication = project.getPluginManager().hasPlugin("application")
+            hasGroovy = project.getPluginManager().hasPlugin('groovy')
 
-            hasMaven = project.getPluginManager().hasPlugin("maven")
+            hasApplication = project.getPluginManager().hasPlugin('application')
 
-            hasBintray = project.getPluginManager().hasPlugin("com.jfrog.bintray")
+            hasMaven = project.getPluginManager().hasPlugin('maven')
 
-            hasTodo = project.getPluginManager().hasPlugin("com.autoscout24.gradle.todo")
+            hasMavenDeploy = project.auroraSettings.mavenDeploySettings
 
-            hasMoonLicense = project.getPluginManager().hasPlugin("info.gianlucacosta.moonlicense")
+            hasTodo = project.getPluginManager().hasPlugin('com.autoscout24.gradle.todo')
 
-            hasMoonDeploy = project.getPluginManager().hasPlugin("info.gianlucacosta.moondeploy")
+            hasMoonLicense = project.getPluginManager().hasPlugin('info.gianlucacosta.moonlicense')
+
+            hasMoonDeploy = project.getPluginManager().hasPlugin('info.gianlucacosta.moondeploy')
         }
     }
-
 
     private void checkAuroraSettings() {
         if (!auroraSettings.docTask) {
             if (project.hasScala) {
-                auroraSettings.docTask = "scaladoc";
+                auroraSettings.docTask = 'scaladoc'
             } else if (project.hasGroovy) {
-                auroraSettings.docTask = "groovydoc"
+                auroraSettings.docTask = 'groovydoc'
             } else {
-                auroraSettings.docTask = "javadoc"
+                auroraSettings.docTask = 'javadoc'
             }
 
             Log.info("Inferred doc task: ${auroraSettings.docTask}")
         }
 
         if (!auroraSettings.gitHubUser) {
-            throw new AuroraException("Missing gitHubUser")
+            throw new AuroraException('Missing gitHubUser')
         }
 
         if (!auroraSettings.authors) {
-            throw new AuroraException("At least an author must be specified")
-        }
-
-
-        if (project.hasBintray && !auroraSettings.bintraySettings) {
-            throw new AuroraException("Missing bintray block")
+            throw new AuroraException('At least an author must be specified')
         }
 
         if (project.hasApplication && auroraSettings.customStartupScripts) {
@@ -107,12 +102,11 @@ class DynamicService {
                 auroraSettings.requiredJavaVersion = getCurrentJavaVersion()
 
                 if (auroraSettings.requiredJavaVersion == null) {
-                    throw new AuroraException("The required Java version is missing and could not be detected from the current JVM")
+                    throw new AuroraException('The required Java version is missing and could not be detected from the current JVM')
                 } else {
                     Log.info("Inferred Java version: ${auroraSettings.requiredJavaVersion.dump()}")
                 }
             }
-
 
             if (auroraSettings.runArguments == null) {
                 auroraSettings.runArguments = new RunArguments()
@@ -120,9 +114,8 @@ class DynamicService {
         }
     }
 
-
     private JavaVersion getCurrentJavaVersion() {
-        String javaVersionProperty = System.getProperty("java.version")
+        String javaVersionProperty = System.getProperty('java.version')
 
         Matcher javaVersionMatcher = javaVersionPattern.matcher(javaVersionProperty)
 
@@ -138,27 +131,25 @@ class DynamicService {
         }
     }
 
-
     private void checkProjectProperties() {
         if (!project.name) {
-            throw new AuroraException("The project name is missing")
+            throw new AuroraException('The project name is missing')
         }
 
         if (!project.description) {
-            throw new AuroraException("The project description is missing")
+            throw new AuroraException('The project description is missing')
         }
 
         if (!project.hasJava) {
             throw new AuroraException("Aurora can only be applied to projects having - implicitly or explicitly - the 'java' plugin")
         }
 
-        if (project.hasBintray) {
+        if (project.hasMavenDeploy) {
             if (!project.hasMaven) {
-                throw new AuroraException("The 'maven' plugin is required when employing Bintray's plugin with Aurora")
+                throw new AuroraException("The 'maven' plugin is required when employing mavenDeploy with Aurora")
             }
         }
     }
-
 
     private void setupProjectProperties() {
         project.ext {
@@ -166,56 +157,62 @@ class DynamicService {
 
             artifactId = project.archivesBaseName.toString()
 
-            isRelease = !project.version.toString().endsWith("-SNAPSHOT")
+            isRelease = !project.version.toString().endsWith('-SNAPSHOT')
 
             url = "https://github.com/${auroraSettings.gitHubUser}/${project.name}"
         }
 
-
         if (project.hasScala) {
-            project.ext.mainLanguage = "scala"
+            project.ext.mainLanguage = 'scala'
         } else if (project.hasGroovy) {
-            project.ext.mainLanguage = "groovy"
+            project.ext.mainLanguage = 'groovy'
         } else {
-            project.ext.mainLanguage = "java"
+            project.ext.mainLanguage = 'java'
         }
 
         Log.debug("Project extensions: ${project.ext.dump()}")
     }
 
+    private void setupJavaFx() {
+        if (!project.hasJavaFx) {
+            Log.info('Skipping JavaFX configuration')
+            return
+        }
 
+        project.javafx {
+            version = '11'
+            modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web' ]
+        }
+    }
 
     private void checkArtifactInfo() {
         if (!project.groupId) {
-            throw new AuroraException("The group id must NOT be empty")
+            throw new AuroraException('The group id must NOT be empty')
         }
 
         if (!project.artifactId) {
-            throw new AuroraException("The artifact id (archivesBaseName) must NOT be empty")
+            throw new AuroraException('The artifact id (archivesBaseName) must NOT be empty')
         }
 
         char artifactInitial = project.artifactId.charAt(0)
         if (!Character.isLowerCase(artifactInitial)) {
-            throw new AuroraException("The artifact id (archivesBaseName) must be lowercase")
+            throw new AuroraException('The artifact id (archivesBaseName) must be lowercase')
         }
 
         if (!project.version) {
-            throw new AuroraException("The project version must NOT be empty")
+            throw new AuroraException('The project version must NOT be empty')
         }
     }
-
 
     private void setupArtifacts() {
         project.jar {
             from project.sourceSets.generated.output
         }
 
-
         if (!project.hasMaven) {
-            Log.info("Skipping additional artifacts configuration")
+            Log.info('Skipping additional artifacts configuration')
             return
         }
-
 
         def docTask = auroraSettings.docTask
 
@@ -224,12 +221,10 @@ class DynamicService {
             from project.sourceSets.main.allSource
         }
 
-
         project.task('docJar', type: Jar, dependsOn: docTask) {
             classifier = 'javadoc'
             from project.tasks[docTask].destinationDir
         }
-
 
         project.artifacts {
             archives project.sourcesJar
@@ -237,27 +232,25 @@ class DynamicService {
         }
     }
 
-
     private void setupTodo() {
         if (!project.hasTodo) {
-            Log.info("Skipping todo configuration")
+            Log.info('Skipping todo configuration')
             return
         }
 
         project.todo.failIfFound = project.isRelease
     }
 
-
     private void setupApplicationFiles() {
         if (!project.hasApplication) {
-            Log.info("Skipping the setup of application files")
+            Log.info('Skipping the setup of application files')
             return
         }
 
         project.distributions {
             main {
                 contents {
-                    from("src/generated/dist")
+                    from('src/generated/dist')
                 }
             }
         }
@@ -267,171 +260,97 @@ class DynamicService {
         }
     }
 
-
-
-    private void setupBintray() {
-        if (!project.hasBintray) {
-            Log.info("Skipping Bintray setup")
+    private void setupMavenDeploy() {
+        if (!project.hasMavenDeploy) {
+            Log.info('Skipping Maven deploy setup')
             return
         }
 
+        String user = auroraSettings.mavenDeploySettings.user ?: System.env.MAVEN_DEPLOY_USER
 
-        setupBintrayCredentials()
+        String password = auroraSettings.mavenDeploySettings.password ?: System.env.MAVEN_DEPLOY_PASSWORD
 
+        String url = auroraSettings.mavenDeploySettings.url
 
-        project.bintray {
-            user = auroraSettings.bintraySettings.user
-            key = auroraSettings.bintraySettings.key
-
-            filesSpec {
-                from "${project.buildDir}/libs"
-
-                from("${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}") {
-                    include "*.pom"
-                }
-
-                into "${project.groupId.replace('.', '/')}/${project.artifactId}/${project.version}"
-            }
-
-            dryRun = false
-            publish = false
-
-            pkg {
-                repo = auroraSettings.bintraySettings.repo
-
-                name = project.name
-                desc = project.description
-
-                websiteUrl = project.ext.url
-                issueTrackerUrl = "${project.ext.url}/issues"
-                vcsUrl = "${project.ext.url}.git"
-
-                licenses = auroraSettings.bintraySettings.licenses
-                labels = auroraSettings.bintraySettings.labels
-
-                publicDownloadNumbers = false
-
-                githubRepo = "${auroraSettings.gitHubUser}/${project.name}"
-
-                version {
-                    name = project.version
-                    vcsTag = "v${project.version}"
-
-                    released = new Date()
-
-                    gpg {
-                        sign = true
+        project.uploadArchives {
+            repositories {
+                mavenDeployer {
+                    if (user && password) {
+                        repository(url: url) {
+                            authentication(userName: user, password: password)
+                        }
+                    } else {
+                        repository(url: url)
                     }
 
-                    mavenCentralSync {
-                        sync = false
+                    pom.project {
+                        groupId = project.group
+                        artifactId = project.archivesBaseName
+                        version = project.version
                     }
                 }
             }
         }
     }
-
-
-    private void setupBintrayCredentials() {
-        String sourcePropertyFilePath = System.getenv("BINTRAY_CREDENTIALS_FILE")
-        if (sourcePropertyFilePath == null) {
-            Log.info("Environment variable for Bintray's credentials file not set")
-            return
-        }
-
-        Properties securityProperties = new Properties()
-
-        if (!auroraSettings.bintraySettings.user || !auroraSettings.bintraySettings.key) {
-            File sourcePropertyFile = new File(sourcePropertyFilePath)
-            if (sourcePropertyFile.isFile()) {
-                Log.info("Bintray credentials file found at: ${sourcePropertyFile.getAbsolutePath()}. Now loading...")
-                securityProperties.load(new FileInputStream(sourcePropertyFile))
-            }
-        }
-
-
-        if (!auroraSettings.bintraySettings.user) {
-            Log.info("bintrayUser recovered from Bintray's credentials file")
-            auroraSettings.bintraySettings.user = securityProperties.getProperty("bintrayUser")
-        }
-
-        if (!auroraSettings.bintraySettings.key) {
-            Log.info("key recovered from Bintray's credentials file")
-            auroraSettings.bintraySettings.key = securityProperties.getProperty("bintrayKey")
-        }
-    }
-
 
     private void setupTaskDependencies() {
-        project.clean.dependsOn("cleanGenerated")
+        project.clean.dependsOn('cleanGenerated')
 
-        project.compileGeneratedJava.dependsOn("generateMainIcons")
-        project.compileGeneratedJava.dependsOn("generateArtifactInfo")
+        project.compileGeneratedJava.dependsOn('generateMainIcons')
+        project.compileGeneratedJava.dependsOn('generateArtifactInfo')
 
-        project.processGeneratedResources.dependsOn("generateMainIcons")
-        project.processGeneratedResources.dependsOn("generateArtifactInfo")
-
+        project.processGeneratedResources.dependsOn('generateMainIcons')
+        project.processGeneratedResources.dependsOn('generateArtifactInfo')
 
         if (project.hasMoonLicense) {
-            project.compileGeneratedJava.dependsOn("setNotices")
-            project.processGeneratedResources.dependsOn("setNotices")
+            project.compileGeneratedJava.dependsOn('setNotices')
+            project.processGeneratedResources.dependsOn('setNotices')
 
-            project.checkGit.dependsOn("setNotices")
+            project.checkGit.dependsOn('setNotices')
 
-            project.setNotices.dependsOn("generateArtifactInfo")
-            project.setNotices.dependsOn("generateMainIcons")
+            project.setNotices.dependsOn('generateArtifactInfo')
+            project.setNotices.dependsOn('generateMainIcons')
         }
-
 
         if (project.hasMaven) {
-            project.install.dependsOn("check")
-            project.assemble.dependsOn("generatePom")
+            project.install.dependsOn('check')
+            project.assemble.dependsOn('generatePom')
         }
-
 
         if (project.hasScala) {
-            project.scaladoc.dependsOn("setupScaladoc")
+            project.scaladoc.dependsOn('setupScaladoc')
         }
-
 
         if (project.isRelease) {
-            project.check.dependsOn("checkGit")
-            project.check.dependsOn("checkDependencies")
+            project.check.dependsOn('checkGit')
+            project.check.dependsOn('checkDependencies')
         }
-
 
         if (project.hasTodo) {
-            project.check.dependsOn("checkTodo")
+            project.check.dependsOn('checkTodo')
         }
 
+        if (project.hasMavenDeploy) {
+            def mavenDeployDependencies = ['assemble', 'check']
 
-        if (project.hasBintray) {
-            def bintrayDependencies = ["assemble", "check", "assertRelease"]
-
-            project.bintrayUpload.dependsOn(bintrayDependencies)
-
-            Task bintrayRecordingCopy = project.tasks.findByPath("_bintrayRecordingCopy")
-            if (bintrayRecordingCopy != null) {
-                Log.debug("_bintrayRecordingCopy found. Setting its dependencies as well")
-                bintrayRecordingCopy.dependsOn(bintrayDependencies)
-            }
+            project.uploadArchives.dependsOn(mavenDeployDependencies)
         }
-
 
         if (project.hasApplication) {
-            project.distZip.dependsOn("check")
-            project.distZip.dependsOn("generateDistIcons")
-            project.distZip.dependsOn("generateCustomStartupScripts")
+            project.distZip.dependsOn('check')
+            project.distZip.dependsOn('generateDistIcons')
+            project.distZip.dependsOn('generateCustomStartupScripts')
 
-            project.distTar.dependsOn("check")
-            project.distTar.dependsOn("generateDistIcons")
-            project.distTar.dependsOn("generateCustomStartupScripts")
+            project.distTar.dependsOn('check')
+            project.distTar.dependsOn('generateDistIcons')
+            project.distTar.dependsOn('generateCustomStartupScripts')
 
-            project.generateAppDescriptor.dependsOn("distZip")
+            project.generateAppDescriptor.dependsOn('distZip')
 
             if (project.hasMoonDeploy && project.hasMoonLicense) {
-                project.assemble.dependsOn("generateAppDescriptor")
+                project.assemble.dependsOn('generateAppDescriptor')
             }
         }
     }
+
 }

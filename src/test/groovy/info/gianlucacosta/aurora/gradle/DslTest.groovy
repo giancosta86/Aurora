@@ -1,23 +1,3 @@
-/*§
-  ===========================================================================
-  Aurora
-  ===========================================================================
-  Copyright (C) 2015-2017 Gianluca Costa
-  ===========================================================================
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  ===========================================================================
-*/
-
 package info.gianlucacosta.aurora.gradle
 
 import org.gradle.api.Project
@@ -25,6 +5,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.rules.TemporaryFolder
 
 class DslTest extends GroovyTestCase {
+
     private TemporaryFolder tempFolder
     private Project project
 
@@ -36,38 +17,34 @@ class DslTest extends GroovyTestCase {
         tempFolder.create()
 
         project = ProjectBuilder.builder()
-                .withName("AuroraTest")
+                .withName('AuroraTest')
                 .withProjectDir(tempFolder.getRoot())
                 .build()
 
-        project.plugins.apply("scala")
-        project.plugins.apply("info.gianlucacosta.aurora")
+        project.plugins.apply('maven')
+        project.plugins.apply('scala')
+        project.plugins.apply('info.gianlucacosta.aurora')
 
-        project.group = "alpha"
-        project.archivesBaseName = "beta"
+        project.group = 'alpha'
+        project.archivesBaseName = 'beta'
 
-
-        project.description = "A test project"
+        project.description = 'A test project'
     }
-
 
     private void applyDefaultWith(Closure closure) {
         project.aurora {
-            gitHubUser = "anyUser"
+            gitHubUser = 'anyUser'
 
             author {
-                name = "TestAuthor"
-                email = "test@localhost"
-                url = "localhost"
+                name = 'TestAuthor'
+                email = 'test@localhost'
+                url = 'localhost'
             }
 
-            bintray {
-                user = "theUser"
-                key = "theKey"
-                repo = "testRepo"
-                licenses = ['Apache-2.0']
-                labels = ["testLabel1", "testLabel2"]
-
+            mavenDeploy {
+                url = 'theUrl'
+                user = 'theUser'
+                password = 'thePassword'
             }
 
             closure.delegate = delegate
@@ -76,32 +53,36 @@ class DslTest extends GroovyTestCase {
         }
     }
 
-
     @Override
     void tearDown() {
         tempFolder.delete()
 
-        super.tearDown();
+        super.tearDown()
     }
-
 
     void test_defaultConfiguration() {
-        applyDefaultWith {}
+        applyDefaultWith { }
     }
 
+    void test_mavenDeploySettings() {
+        applyDefaultWith { }
 
-    void test_withoutBintraySettingsWithoutBintray() {
+        assertEquals('theUrl', project.auroraSettings.mavenDeploySettings.url)
+        assertEquals('theUser', project.auroraSettings.mavenDeploySettings.user)
+        assertEquals('thePassword', project.auroraSettings.mavenDeploySettings.password)
+    }
+
+    void test_withoutMavenDeploySettings() {
         applyDefaultWith {
-            bintraySettings = null
+            mavenDeploySettings = null
         }
     }
 
-
     void test_auroraSettingsAvailability() {
-        applyDefaultWith {}
+        applyDefaultWith { }
 
         assertEquals(
-                "anyUser",
+                'anyUser',
                 project.auroraSettings.gitHubUser
         )
     }
@@ -137,7 +118,6 @@ class DslTest extends GroovyTestCase {
         )
     }
 
-
     void test_requiredJavaVersionWithDefaults() {
         applyDefaultWith {
             javaVersion {
@@ -167,4 +147,5 @@ class DslTest extends GroovyTestCase {
                 project.auroraSettings.requiredJavaVersion.update
         )
     }
+
 }

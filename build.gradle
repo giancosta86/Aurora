@@ -1,25 +1,15 @@
 buildscript {
     repositories {
-        maven {
-            url 'http://localhost:8080/snapshots'
-        }
-
         mavenCentral()
     }
-
-    /*
-    dependencies {
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
-        classpath 'info.gianlucacosta.aurora:aurora:8.0'
-    }*/
 }
 
-apply plugin: 'groovy'
-apply plugin: 'maven'
-/*
-apply plugin: 'info.gianlucacosta.moonlicense'
-apply plugin: 'info.gianlucacosta.aurora'
-*/
+plugins {
+    id 'groovy'
+    id 'maven'
+
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+}
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
@@ -31,52 +21,29 @@ repositories {
     mavenCentral()
 }
 
+javafx {
+    version = '11'
+    modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web' ]
+}
+
 dependencies {
-    //generatedCompile localGroovy()
-
-    //compile localGroovy()
-
     compile gradleApi()
 
     compile 'org.apache.xmlgraphics:batik-transcoder:1.9.1'
     compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.2'
     compile 'org.apache.xmlgraphics:batik-codec:1.9.1'
+    compile 'org.jclarion:image4j:0.7'
 
     testCompile 'junit:junit:4.12'
-
-//testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
 }
-
-/*
-moonLicense {
-    license = apache2
-
-    productInfo {
-        productName = "Aurora"
-        inceptionYear = 2015
-        copyrightHolder = "Gianluca Costa"
-    }
-
-    excludes = ['/RunJava.js$', '/RunJava.py$']
-}
-*/
-
-/*
-aurora {
-    gitHubUser = 'giancosta86'
-
-    author {
-        name = 'Gianluca Costa'
-        email = 'gianluca@gianlucacosta.info'
-    }
-}
-*/
 
 uploadArchives {
+    dependsOn 'build'
+
     repositories {
         mavenDeployer {
             repository(url: 'http://localhost:8080/snapshots') {
-                authentication(userName: System.env.LOCAL_MAVEN_USER, password: System.env.LOCAL_MAVEN_PASSWORD)
+                authentication(userName: System.env.MAVEN_DEPLOY_USER, password: System.env.MAVEN_DEPLOY_PASSWORD)
             }
             pom.project {
                 groupId = project.group

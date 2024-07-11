@@ -7,13 +7,14 @@ import info.gianlucacosta.aurora.utils.Log
  * Settings underlying the <b>aurora</b> block.
  */
 class AuroraSettings {
+
     String gitHubUser
 
     String docTask
 
     List<Author> authors = new ArrayList<>()
 
-    BintraySettings bintraySettings
+    MavenDeploySettings mavenDeploySettings
 
     boolean commandLineApp = false
 
@@ -22,7 +23,6 @@ class AuroraSettings {
     RunArguments runArguments
 
     boolean customStartupScripts = true
-
 
     def author(Closure closure) {
         Author author = new Author()
@@ -35,45 +35,30 @@ class AuroraSettings {
         Log.debug("Author: ${author.dump()}")
 
         if (!author.name) {
-            throw new AuroraException("Missing author name")
+            throw new AuroraException('Missing author name')
         }
-
 
         if (!author.email) {
-            throw new AuroraException("Missing author email")
+            throw new AuroraException('Missing author email')
         }
-
 
         authors << author
     }
 
+    def mavenDeploy(Closure closure) {
+        MavenDeploySettings mavenDeploySettings = new MavenDeploySettings()
 
-    def bintray(Closure closure) {
-        BintraySettings bintraySettings = new BintraySettings()
-
-        closure.delegate = bintraySettings
+        closure.delegate = mavenDeploySettings
         closure.resolveStrategy = Closure.DELEGATE_FIRST
 
         closure()
 
-        Log.debug("Bintray settings: ${bintraySettings.dump()}")
-
-
-        if (!bintraySettings.repo) {
-            throw new AuroraException("Missing Bintray repo")
+        if (!mavenDeploySettings.url) {
+            throw new AuroraException('Missing Maven deploy URL')
         }
 
-        if (!bintraySettings.licenses) {
-            throw new AuroraException("Missing Bintray licenses")
-        }
-
-        if (!bintraySettings.labels) {
-            throw new AuroraException("Missing Bintray labels")
-        }
-
-        this.bintraySettings = bintraySettings
+        this.mavenDeploySettings = mavenDeploySettings
     }
-
 
     def javaVersion(Closure closure) {
         JavaVersion requiredJavaVersion = new JavaVersion()
@@ -88,7 +73,6 @@ class AuroraSettings {
         this.requiredJavaVersion = requiredJavaVersion
     }
 
-
     def runArgs(Closure closure) {
         RunArguments runArguments = new RunArguments()
 
@@ -101,4 +85,5 @@ class AuroraSettings {
 
         this.runArguments = runArguments
     }
+
 }
