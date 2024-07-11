@@ -109,15 +109,6 @@ class GenerateArtifactInfoTask extends DefaultTask {
                 "@WEBSITE@",
                 StringEscapeUtils.escapeJava(project.url.toString())
         )
-
-                .replace(
-                "@FACEBOOK_PAGE@",
-                project.facebookPage != null ?
-                        "\"${StringEscapeUtils.escapeJava(project.facebookPage)}\""
-                        :
-                        "null"
-        )
-
                 .replace(
                 "@RELEASE@",
                 project.isRelease.toString()
