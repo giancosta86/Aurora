@@ -1,74 +1,55 @@
-/*§
-  ===========================================================================
-  Aurora
-  ===========================================================================
-  Copyright (C) 2015-2017 Gianluca Costa
-  ===========================================================================
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  ===========================================================================
-*/
-
 buildscript {
     repositories {
         maven {
-            url 'https://dl.bintray.com/giancosta86/Hephaestus'
+            url 'http://localhost:8080/snapshots'
         }
 
-        jcenter()
+        mavenCentral()
     }
 
+    /*
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
         classpath 'info.gianlucacosta.aurora:aurora:8.0'
-    }
+    }*/
 }
-
 
 apply plugin: 'groovy'
 apply plugin: 'maven'
-apply plugin: 'com.jfrog.bintray'
+/*apply plugin: 'com.jfrog.bintray'
 apply plugin: 'info.gianlucacosta.moonlicense'
 apply plugin: 'info.gianlucacosta.aurora'
+*/
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
 version = '10.0.0-SNAPSHOT'
 
-
 description = 'Elegant Gradle projects for the JVM'
 
+repositories {
+    mavenCentral() // Define repositories for project dependencies here
+}
 
 dependencies {
-    generatedCompile localGroovy()
+    //generatedCompile localGroovy()
 
-    compile localGroovy()
+    //compile localGroovy()
 
     compile gradleApi()
 
     compile 'org.apache.xmlgraphics:batik-transcoder:1.9.1'
     compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.2'
     compile 'org.apache.xmlgraphics:batik-codec:1.9.1'
-    compile 'org.jclarion:image4j:0.7'
-
 
     testCompile 'junit:junit:4.12'
 
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
+//testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+//testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
 }
 
-
+/*
 moonLicense {
     license = apache2
 
@@ -80,8 +61,9 @@ moonLicense {
 
     excludes = ['/RunJava.js$', '/RunJava.py$']
 }
+*/
 
-
+/*
 aurora {
     gitHubUser = 'giancosta86'
 
@@ -102,5 +84,21 @@ aurora {
                 'GitHub',
                 'Bintray'
         ]
+    }
+}
+*/
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://localhost:8080/snapshots') {
+                authentication(userName: System.env.LOCAL_MAVEN_USER, password: System.env.LOCAL_MAVEN_PASSWORD)
+            }
+            pom.project {
+                groupId = project.group
+                artifactId = project.archivesBaseName
+                version = project.version
+            }
+        }
     }
 }

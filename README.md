@@ -60,11 +60,9 @@ Aurora's goal is to reduce boilerplate configuration, by providing the following
 
   1. Maven local
 
-  2. JCenter
+  2. Maven Central
 
-  3. Maven Central
-
-  4. [Hephaestus](https://bintray.com/giancosta86/Hephaestus)
+  3. [Hephaestus](XXX)
 
 - Setup a _sources_ and a _Javadoc_ jar, for Maven deployment. The actual documentation task (**scaladoc**, **groovydoc** or **javadoc**) is automatically inferred
 
@@ -183,10 +181,10 @@ At the very beginning of your build script, add:
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
 
         maven {
-            url 'https://dl.bintray.com/giancosta86/Hephaestus'
+          url "http://localhost:8080/snapshots"
         }
     }
 
@@ -330,4 +328,4 @@ Aurora is employed in a wide variety of open source projects - both libraries an
 
 - [MoonLicense](https://github.com/giancosta86/MoonLicense)
 
-- [Hephaestus](https://bintray.com/giancosta86/Hephaestus)
+- [Hephaestus](XXX)
