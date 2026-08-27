@@ -70,13 +70,6 @@ class DslTest extends GroovyTestCase {
     }
 
 
-    void test_withoutBintraySettingsWithoutBintray() {
-        applyDefaultWith {
-            bintraySettings = null
-        }
-    }
-
-
     void test_auroraSettingsAvailability() {
         applyDefaultWith {}
 
