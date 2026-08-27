@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '0.0.0'
+version = '0.0.0-SNAPSHOT'
 
 
 description = 'Elegant Gradle projects for the JVM'
@@ -35,3 +35,5 @@ uploadArchives {
         }
     }
 }
+
+task publish(dependsOn: 'uploadArchives') { }
