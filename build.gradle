@@ -1,37 +1,21 @@
-buildscript {
-    repositories {
-        maven {
-            url 'https://dl.bintray.com/giancosta86/Hephaestus'
-        }
-
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
-        classpath 'info.gianlucacosta.aurora:aurora:8.0'
-    }
-}
-
-
 apply plugin: 'groovy'
 apply plugin: 'maven'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'info.gianlucacosta.moonlicense'
-apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.aurora'
 archivesBaseName = 'aurora'
-version = '9.2'
+version = '0.0.0'
 
 
 description = 'Elegant Gradle projects for the JVM'
 
 
-dependencies {
-    generatedCompile localGroovy()
+repositories {
+    mavenLocal()
 
+    mavenCentral()
+}
+
+dependencies {
     compile localGroovy()
 
     compile gradleApi()
@@ -41,46 +25,13 @@ dependencies {
     compile 'org.apache.xmlgraphics:batik-codec:1.9.1'
     compile 'org.jclarion:image4j:0.7'
 
-
     testCompile 'junit:junit:4.12'
-
-    testRuntime 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    testRuntime 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
 }
 
-
-moonLicense {
-    license = apache2
-
-    productInfo {
-        productName = "Aurora"
-        inceptionYear = 2015
-        copyrightHolder = "Gianluca Costa"
-    }
-
-    excludes = ['/RunJava.js$', '/RunJava.py$']
-}
-
-
-aurora {
-    gitHubUser = 'giancosta86'
-
-    author {
-        name = 'Gianluca Costa'
-        email = 'gianluca@gianlucacosta.info'
-    }
-
-    bintray {
-        repo = "Hephaestus"
-
-        licenses = ['Apache-2.0']
-
-        labels = [
-                'elegant',
-                'projects',
-                'Gradle',
-                'GitHub',
-                'Bintray'
-        ]
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://${buildDir}/repo")
+        }
     }
 }

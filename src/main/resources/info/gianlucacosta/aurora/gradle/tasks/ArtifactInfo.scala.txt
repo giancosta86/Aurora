@@ -14,8 +14,4 @@ object ArtifactInfo {
     val license = "@LICENSE@"
 
     val website = "@WEBSITE@"
-
-    val facebookPage: String = @FACEBOOK_PAGE@
-
-    val release = @RELEASE@
 }

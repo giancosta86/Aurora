@@ -21,6 +21,8 @@ class GenerateMainIconsTask extends DefaultTask {
         File svgSourceFile = project.file("mainIcon.svg")
 
         if (!svgSourceFile.exists()) {
+            Log.info("Main icon source not found - skipping generation of main icons...")
+
             throw new StopExecutionException()
         }
 

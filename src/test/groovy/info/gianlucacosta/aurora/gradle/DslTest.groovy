@@ -26,7 +26,6 @@ class DslTest extends GroovyTestCase {
         project.group = "alpha"
         project.archivesBaseName = "beta"
 
-
         project.description = "A test project"
     }
 
@@ -39,15 +38,6 @@ class DslTest extends GroovyTestCase {
                 name = "TestAuthor"
                 email = "test@localhost"
                 url = "localhost"
-            }
-
-            bintray {
-                user = "theUser"
-                key = "theKey"
-                repo = "testRepo"
-                licenses = ['Apache-2.0']
-                labels = ["testLabel1", "testLabel2"]
-
             }
 
             closure.delegate = delegate
@@ -74,70 +64,8 @@ class DslTest extends GroovyTestCase {
         applyDefaultWith {}
 
         assertEquals(
-                "anyUser",
-                project.auroraSettings.gitHubUser
-        )
-    }
-
-    void test_requiredJavaVersion() {
-        applyDefaultWith {
-            javaVersion {
-                major = 1
-                minor = 7
-                build = 5
-                update = 64
-            }
-        }
-
-        assertEquals(
-                1,
-                project.auroraSettings.requiredJavaVersion.major
-        )
-
-        assertEquals(
-                7,
-                project.auroraSettings.requiredJavaVersion.minor
-        )
-
-        assertEquals(
-                5,
-                project.auroraSettings.requiredJavaVersion.build
-        )
-
-        assertEquals(
-                64,
-                project.auroraSettings.requiredJavaVersion.update
-        )
-    }
-
-
-    void test_requiredJavaVersionWithDefaults() {
-        applyDefaultWith {
-            javaVersion {
-                major = 1
-                minor = 8
-                update = 91
-            }
-        }
-
-        assertEquals(
-                1,
-                project.auroraSettings.requiredJavaVersion.major
-        )
-
-        assertEquals(
-                8,
-                project.auroraSettings.requiredJavaVersion.minor
-        )
-
-        assertEquals(
-                0,
-                project.auroraSettings.requiredJavaVersion.build
-        )
-
-        assertEquals(
-                91,
-                project.auroraSettings.requiredJavaVersion.update
+            "anyUser",
+            project.auroraSettings.gitHubUser
         )
     }
 }

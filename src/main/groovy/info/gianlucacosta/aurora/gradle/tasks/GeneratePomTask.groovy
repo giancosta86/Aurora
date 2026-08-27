@@ -11,11 +11,13 @@ import org.gradle.api.tasks.TaskAction
  * Creates a Maven POM for the project
  */
 class GeneratePomTask extends DefaultTask {
+    private static final String MAVEN_TEMP_DIRECTORY_NAME = "mavenTemp"
+
     @TaskAction
     def generatePom() {
         AuroraSettings auroraSettings = project.auroraSettings
 
-        String pomPath = "${project.buildDir}/${AuroraPlugin.MAVEN_TEMP_DIRECTORY_NAME}/${project.artifactId}-${project.version}.pom"
+        String pomPath = "${project.buildDir}/${MAVEN_TEMP_DIRECTORY_NAME}/${project.artifactId}-${project.version}.pom"
 
         Log.info("Generating POM file: ${pomPath}")
 

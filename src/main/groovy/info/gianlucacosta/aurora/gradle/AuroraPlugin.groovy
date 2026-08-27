@@ -13,8 +13,6 @@ import org.gradle.api.invocation.Gradle
  * Aurora's plugin for Gradle
  */
 class AuroraPlugin implements Plugin<Project> {
-    public static final String MAVEN_TEMP_DIRECTORY_NAME = "mavenTemp"
-
     @Override
     void apply(Project project) {
         Log.debug("Running the static service...")

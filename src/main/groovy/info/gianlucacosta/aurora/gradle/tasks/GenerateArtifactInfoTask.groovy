@@ -13,31 +13,22 @@ import org.gradle.api.tasks.TaskAction
 class GenerateArtifactInfoTask extends DefaultTask {
     @TaskAction
     def generateAppInfo() {
-        if (!project.hasMoonLicense) {
-            Log.info("Cannot generate artifact info, as MoonLicense is missing")
-
-            throw new StopExecutionException()
-        }
-
-
         String languageDirectoryName = project.mainLanguage
         Log.debug("Language directory name: ${languageDirectoryName}")
 
         String sourceExtension = languageDirectoryName
         String templateResourceName = "ArtifactInfo.${sourceExtension}.txt"
 
-
         String groupLastComponent = project.groupId.split("\\.").last()
         String artifactId = project.artifactId
-
 
         String sourcePackage
 
         if (groupLastComponent != artifactId) {
             String artifactIdPackageComponent =
-                    artifactId
-                            .replaceAll("[^A-Za-z0-9]", "_")
-                            .replaceAll("__+", "_")
+                artifactId
+                    .replaceAll("[^A-Za-z0-9]", "_")
+                    .replaceAll("__+", "_")
 
             sourcePackage = "${project.groupId}.${artifactIdPackageComponent}"
         } else {
@@ -75,53 +66,33 @@ class GenerateArtifactInfoTask extends DefaultTask {
 
     private def injectVariables(String templateString, String sourcePackage) {
         return templateString
-                .replace(
+            .replace(
                 "@PACKAGE@",
                 sourcePackage
-        )
-
-                .replace(
+            )
+            .replace(
                 "@NAME@",
-                StringEscapeUtils.escapeJava(project.moonLicense.productInfo.productName)
-        )
-
-                .replace(
+                StringEscapeUtils.escapeJava("<NAME/TITLE>")
+            )
+            .replace(
                 "@VERSION@",
                 StringEscapeUtils.escapeJava(project.version.toString())
-        )
-
-                .replace(
+            )
+            .replace(
                 "@COPYRIGHT_YEARS@",
-                StringEscapeUtils.escapeJava(project.moonLicense.getCopyrightYears())
-        )
-
-                .replace(
+                StringEscapeUtils.escapeJava("<COPYRIGHT YEARS>")
+            )
+            .replace(
                 "@COPYRIGHT_HOLDER@",
-                StringEscapeUtils.escapeJava(project.moonLicense.productInfo.copyrightHolder)
-        )
-
-                .replace(
+                StringEscapeUtils.escapeJava("<COPYRIGHT HOLDER>")
+            )
+            .replace(
                 "@LICENSE@",
-                StringEscapeUtils.escapeJava(project.moonLicense.license.name)
-        )
-
-                .replace(
+                StringEscapeUtils.escapeJava("<LICENSE>")
+            )
+            .replace(
                 "@WEBSITE@",
                 StringEscapeUtils.escapeJava(project.url.toString())
-        )
-
-                .replace(
-                "@FACEBOOK_PAGE@",
-                project.facebookPage != null ?
-                        "\"${StringEscapeUtils.escapeJava(project.facebookPage)}\""
-                        :
-                        "null"
-        )
-
-                .replace(
-                "@RELEASE@",
-                project.isRelease.toString()
-
-        )
+            )
     }
 }

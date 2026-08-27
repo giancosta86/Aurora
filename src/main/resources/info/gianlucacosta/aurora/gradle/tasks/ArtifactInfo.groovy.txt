@@ -9,8 +9,6 @@ public class ArtifactInfo {
     private static final String copyrightHolder = "@COPYRIGHT_HOLDER@";
     private static final String license = "@LICENSE@";
     private static final String website = "@WEBSITE@";
-    private static final String facebookPage = @FACEBOOK_PAGE@;
-    private static final boolean release = @RELEASE@;
 
 
     public static String getName() {
@@ -45,16 +43,6 @@ public class ArtifactInfo {
 
     public static String getWebsite() {
         return website;
-    }
-
-
-    public static String getFacebookPage() {
-        return facebookPage;
-    }
-
-
-    public static boolean isRelease() {
-        return release;
     }
 
 
