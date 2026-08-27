@@ -38,12 +38,10 @@ class StaticService {
         project.repositories {
             mavenLocal()
 
-            jcenter()
-
             mavenCentral()
 
             maven {
-                url "https://dl.bintray.com/giancosta86/Hephaestus"
+                url "https://repo.repsy.io/giancosta86/hephaestus"
             }
         }
     }
