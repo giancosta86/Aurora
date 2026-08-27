@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  pull_request:
+    types: closed
+    branches: main
+
+jobs:
+  publish-library:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: giancosta86/aurora-github/actions/publish-jvm-project@v12
+        with:
+          java-version: 8.0.502.fx-zulu
+          tool-version: 2.10
+          auth-user: ${{ secrets.REPO_USER }}
+          auth-token: ${{ secrets.REPO_TOKEN }}
+
+  tag-and-release:
+    needs: publish-library
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: giancosta86/aurora-github/actions/tag-and-release@v12

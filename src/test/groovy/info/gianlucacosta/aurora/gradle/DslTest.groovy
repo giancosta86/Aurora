@@ -1,23 +1,3 @@
-/*§
-  ===========================================================================
-  Aurora
-  ===========================================================================
-  Copyright (C) 2015-2017 Gianluca Costa
-  ===========================================================================
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  ===========================================================================
-*/
-
 package info.gianlucacosta.aurora.gradle
 
 import org.gradle.api.Project
@@ -46,7 +26,6 @@ class DslTest extends GroovyTestCase {
         project.group = "alpha"
         project.archivesBaseName = "beta"
 
-
         project.description = "A test project"
     }
 
@@ -59,15 +38,6 @@ class DslTest extends GroovyTestCase {
                 name = "TestAuthor"
                 email = "test@localhost"
                 url = "localhost"
-            }
-
-            bintray {
-                user = "theUser"
-                key = "theKey"
-                repo = "testRepo"
-                licenses = ['Apache-2.0']
-                labels = ["testLabel1", "testLabel2"]
-
             }
 
             closure.delegate = delegate
@@ -90,81 +60,12 @@ class DslTest extends GroovyTestCase {
     }
 
 
-    void test_withoutBintraySettingsWithoutBintray() {
-        applyDefaultWith {
-            bintraySettings = null
-        }
-    }
-
-
     void test_auroraSettingsAvailability() {
         applyDefaultWith {}
 
         assertEquals(
-                "anyUser",
-                project.auroraSettings.gitHubUser
-        )
-    }
-
-    void test_requiredJavaVersion() {
-        applyDefaultWith {
-            javaVersion {
-                major = 1
-                minor = 7
-                build = 5
-                update = 64
-            }
-        }
-
-        assertEquals(
-                1,
-                project.auroraSettings.requiredJavaVersion.major
-        )
-
-        assertEquals(
-                7,
-                project.auroraSettings.requiredJavaVersion.minor
-        )
-
-        assertEquals(
-                5,
-                project.auroraSettings.requiredJavaVersion.build
-        )
-
-        assertEquals(
-                64,
-                project.auroraSettings.requiredJavaVersion.update
-        )
-    }
-
-
-    void test_requiredJavaVersionWithDefaults() {
-        applyDefaultWith {
-            javaVersion {
-                major = 1
-                minor = 8
-                update = 91
-            }
-        }
-
-        assertEquals(
-                1,
-                project.auroraSettings.requiredJavaVersion.major
-        )
-
-        assertEquals(
-                8,
-                project.auroraSettings.requiredJavaVersion.minor
-        )
-
-        assertEquals(
-                0,
-                project.auroraSettings.requiredJavaVersion.build
-        )
-
-        assertEquals(
-                91,
-                project.auroraSettings.requiredJavaVersion.update
+            "anyUser",
+            project.auroraSettings.gitHubUser
         )
     }
 }
