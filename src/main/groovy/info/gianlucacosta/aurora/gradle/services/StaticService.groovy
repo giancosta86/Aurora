@@ -80,7 +80,6 @@ class StaticService {
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
-        project.tasks.create(name: "generateCustomStartupScripts", type: GenerateCustomStartupScripts)
         project.tasks.create(name: "setupScaladoc", type: SetupScaladocTask)
     }
 }
