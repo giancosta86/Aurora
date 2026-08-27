@@ -77,7 +77,6 @@ class StaticService {
         project.tasks.create(name: "checkGit", type: CheckGitTask)
         project.tasks.create(name: "checkDependencies", type: CheckDependenciesTask)
         project.tasks.create(name: "generateArtifactInfo", type: GenerateArtifactInfoTask)
-        project.tasks.create(name: "generateAppDescriptor", type: GenerateAppDescriptorTask)
         project.tasks.create(name: "generateMainIcons", type: GenerateMainIconsTask)
         project.tasks.create(name: "generateDistIcons", type: GenerateDistIconsTask)
         project.tasks.create(name: "generatePom", type: GeneratePomTask)
